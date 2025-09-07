@@ -34,11 +34,27 @@ plot_deps_graph("ggplot2")
 
 <img src="man/figures/README-example-1.png" width="800px" />
 
-You can see on the left side that the `scales` package contributes
-several dependencies that nothing else depends on. If the `ggplot2`
-developers were looking to lighten their package (not that they should),
-eliminating the dependency on `scales` might be a good place to start
-looking.
+You can see that:
+
+- `ggplot2` has 31 dependencies in total (direct and indirect).
+- On the left side that the `scales` package contributes several
+  dependencies that nothing else depends on. If the `ggplot2` developers
+  were looking to lighten their package (not that they should),
+  eliminating the dependency on `scales` might be a good place to start
+  looking.
+
+Another example: What if I really wanted to remove `Rcpp` as a
+dependency of `havel` itself?
+
+``` r
+plot_deps_graph("andrewGhazi/havel")
+```
+
+<img src="man/figures/README-ex2-1.png" width="800px" />
+
+Well, looks like that would be difficult. Even if I remove the direct
+dependency, there would still be an indirect dependency on `Rcpp`
+through `collapse` and `cppRouting`.
 
 \< bit about `uniq_pkg_deps()` \>
 
@@ -68,12 +84,18 @@ There are other packages / posts out there on this type of thing:
   versatile lookups of packages on Bioc, GitHub, etc.
 - `havel` itself is fairly light and fast, depending only on pak, some
   fastverse packages, and base R graphics…
-  - …but it includes ggplot2 in the Suggests if you prefer that. Set
-    `gg = TRUE`.
+  - …but it includes a ggplot version in the Suggests if you prefer
+    that. Set `gg = TRUE`.
 - The default plotting parameters are carefully hand-crafted to look
   nice 😊
 
 ## Misc
+
+> Why’d you make this?
+
+- I wanted to learn about graph algorithms and R’s low-level graphics
+  packages.
+- I was annoyed by packages with hundreds of dependencies.
 
 > What’s with the name?
 
@@ -83,6 +105,8 @@ burdens.
 ## TODO
 
 - more tests
+  - properly handle cases with 0/1 deps, local packages, etc
 - color edges by dependency type
-- ggplot version
+- copy over ggplot version
+- highlight direct dependencies
 - uniq_pkg_deps() function
