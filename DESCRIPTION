@@ -10,6 +10,7 @@ Encoding: UTF-8
 LinkingTo: Rcpp
 RoxygenNote: 7.3.2
 Imports: 
+    cli,
     collapse,
     cppRouting,
     graphics,
