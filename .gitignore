@@ -1,0 +1,5 @@
+.Rproj.user/
+depviz.Rproj
+*.knit.md
+.gitignore.swp
+

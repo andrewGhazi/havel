@@ -1,0 +1,23 @@
+Package: havel
+Type: Package
+Title: Visualizing R package dependencies. 
+Version: 1.0
+Date: 2025-07-20
+Authors@R: person("Andrew", "Ghazi", role = c("aut", "cre"), email = "your@email.com")
+Description: Plot recursive dependency graphs and tabulate the number of unique dependencies added by "top-level" dependencies.
+License: MIT + GPL (>= 3)
+Encoding: UTF-8
+LinkingTo: Rcpp
+RoxygenNote: 7.3.2
+Imports: 
+    collapse,
+    cppRouting,
+    graphics,
+    grid,
+    pak,
+    Rcpp,
+    rlang
+Suggests: 
+    ggplot2,
+    ggraph, 
+    tinytest
