@@ -47,7 +47,8 @@ get_gr_layout = function(edge_vec) {
 #'   \code{c("depends", "imports", "linkingto", "suggests")}
 #' @param pak_res a pre-computed result from
 #'   \code{\link[pak:pkg_deps]{pak::pkg_deps}}
-#' @param gg If true, use ggplot2 + ggraph to draw the plot instead of base graphics.
+#' @param gg If true, use ggplot2 + ggraph to draw the plot instead of base
+#'   graphics.
 #' @param lwd line width
 #' @param cex text size multiplication factor (see
 #'   \code{\link[graphics:par]{graphics::par}})
@@ -62,11 +63,15 @@ get_gr_layout = function(edge_vec) {
 #'   Pre-computing the dependency lookup with
 #'   \code{\link[pak:pkg_deps]{pak::pkg_dep}} and passing it to the
 #'   \code{pak_res} argument can be handy when fiddling with graphical
-#'   parameters.
+#'   parameters. Also handy to avoid hitting the bundled GitHub PAT limits used
+#'   by pak::pkg_deps().
 #'
 #'   The arrows will be off if you resize the panel with the base graphics
-#'   version. Either set \code{gg=TRUE} or set your desired graphics device size, then
-#'   re-run your command.
+#'   version. Either set \code{gg=TRUE} or set your desired graphics device
+#'   size, then re-run your command.
+#'
+#'   The layout in the base graphics version is stochastic - if it looks weird
+#'   just run it again.
 #'
 #' @returns a ggplot
 #' @import collapse
@@ -91,6 +96,10 @@ plot_deps_graph = function(pkg,
   if (gg) {
     rlang::check_installed(c("ggplot2", "ggraph"))
     cli::cli_abort("ggplot2 version not copied over yet")
+  }
+
+  if (log_col_scale) {
+    cli::cli_abort("log_col_scale not implemented yet!")
   }
 
   rlang::arg_match(dep_type,
@@ -166,9 +175,19 @@ draw_pkg_graph = function(plot_df, evt, pkg, lwd,
       family = "Arial",
       adj = 0) # TODO handle this appropriately? i.e. store op <- par() and do par(op) at the end?
 
-  xr = 1.07 * frange(plot_df$V1) # This might still cut some package names off, make user accessible?
-  yr = 1.07 * frange(plot_df$V2)
+  cxy = par("cxy")
 
+  plot_df = plot_df |>
+    mtt(ws = V1 - .5 * nchar(pkg) * cxy[1],
+        we = V1 + .5 * nchar(pkg) * cxy[1],
+        ts = V2 - .5 * cxy[2],
+        te = V2 + .5 * cxy[2])
+
+  xr = c(fmin(plot_df$ws)-.1, fmax(plot_df$we) + .1)
+  yr = c(fmin(plot_df$ts)-.1, fmax(plot_df$te) + .1)
+
+ # Setting the range from starts and ends would be better, but can't get s/e
+ # until some text has been plotted. Can't plot text until xlim/ylim are set...
   plot(
     x = NULL,
     y = NULL,
@@ -177,7 +196,7 @@ draw_pkg_graph = function(plot_df, evt, pkg, lwd,
     axes = FALSE,
     xlim = xr,
     ylim = yr,
-    # xlim = c(fmin(plot_df$xs), fmax(plot_df$xe)), # This would be better, but can't get s/e until some text has been plotted. Can't plot text until xlim/ylim are set...
+    # xlim = c(fmin(plot_df$xs), fmax(plot_df$xe)),
     # ylim = c(fmin(plot_df$ys), fmax(plot_df$ye)),
     xlab = "",
     ylab = ""
