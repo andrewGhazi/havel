@@ -183,11 +183,9 @@ draw_pkg_graph = function(plot_df, evt, pkg, lwd,
         ts = V2 - .5 * cxy[2],
         te = V2 + .5 * cxy[2])
 
-  xr = c(fmin(plot_df$ws)-.1, fmax(plot_df$we) + .1)
-  yr = c(fmin(plot_df$ts)-.1, fmax(plot_df$te) + .1)
+  xr = c(fmin(plot_df$ws) - 2*pad_w, fmax(plot_df$we) + 2*pad_w)
+  yr = c(fmin(plot_df$ts) - 2*pad_h, fmax(plot_df$te) + 2*pad_h)
 
- # Setting the range from starts and ends would be better, but can't get s/e
- # until some text has been plotted. Can't plot text until xlim/ylim are set...
   plot(
     x = NULL,
     y = NULL,
