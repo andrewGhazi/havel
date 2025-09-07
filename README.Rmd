@@ -51,7 +51,7 @@ You can see that:
 Another example: What if I really wanted to remove `Rcpp` as a dependency of `havel` itself?
 
 ```{r, echo=FALSE}
-set.seed(123)
+set.seed(8)
 ```
 
 ```{r ex2, out.width="800px", dpi=300, message=FALSE}
