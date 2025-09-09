@@ -20,5 +20,7 @@ Imports:
     rlang
 Suggests: 
     ggplot2,
-    ggraph, 
+    ggraph,
+    igraph,
+    pals,
     tinytest

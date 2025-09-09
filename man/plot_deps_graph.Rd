@@ -24,10 +24,13 @@ plot_deps_graph(
 \item{dep_type}{type(s) of dependencies to look up. Valid values are
 \code{c("depends", "imports", "linkingto", "suggests")}}
 
+\item{n_iter}{number of iterations for stress graph layout computation}
+
 \item{pak_res}{a pre-computed result from
 \code{\link[pak:pkg_deps]{pak::pkg_deps}}}
 
-\item{gg}{If true, use ggplot2 + ggraph to draw the plot instead of base graphics.}
+\item{gg}{If true, use ggplot2 + ggraph to draw the plot instead of base
+graphics.}
 
 \item{lwd}{line width}
 
@@ -57,11 +60,15 @@ If you include \code{"suggests"} among the dependency types to look
   Pre-computing the dependency lookup with
   \code{\link[pak:pkg_deps]{pak::pkg_dep}} and passing it to the
   \code{pak_res} argument can be handy when fiddling with graphical
-  parameters.
+  parameters. Also handy to avoid hitting the bundled GitHub PAT limits used
+  by pak::pkg_deps().
 
   The arrows will be off if you resize the panel with the base graphics
-  version. Either set \code{gg=TRUE} or set your desired graphics device size, then
-  re-run your command.
+  version. Either set \code{gg=TRUE} or set your desired graphics device
+  size, then re-run your command.
+
+  The layout in the base graphics version is stochastic - if it looks weird
+  just run it again.
 }
 \examples{
 # Using pkgcache in examples is not allowed, uncomment to run these interactively:

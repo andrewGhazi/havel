@@ -31,13 +31,17 @@ pak::pak("andrewGhazi/havel")
 
 ## Example
 
+`havel` has two main functions: `plot_deps_graph()` and `uniq_pkg_deps()`.
+
+### `plot_deps_graph()`
+
 Use `plot_deps_graph()` to look up and plot the dependency graph of a package:
 
 ```{r, echo=FALSE}
 set.seed(1)
 ```
 
-```{r example, out.width="800px", dpi=300, message=FALSE}
+```{r example, dpi=300, message=FALSE}
 library(havel)
 
 plot_deps_graph("ggplot2")
@@ -48,17 +52,19 @@ You can see that:
 * `ggplot2` has 31 dependencies in total (direct and indirect). 
 * On the left side that the `scales` package contributes several dependencies that nothing else depends on. If the `ggplot2` developers were looking to lighten their package (not that they should), eliminating the dependency on `scales` might be a good place to start looking. 
 
-Another example: What if I really wanted to remove `Rcpp` as a dependency of `havel` itself?
+Another example: What if I wanted to remove `Rcpp` as a dependency of `havel` itself?
 
 ```{r, echo=FALSE}
 set.seed(8)
 ```
 
-```{r ex2, out.width="800px", dpi=300, message=FALSE}
+```{r ex2, dpi=300, message=FALSE}
 plot_deps_graph("andrewGhazi/havel")
 ```
 
-Well, looks like that would be difficult. Even if I remove the direct dependency, there would still be an indirect dependency on `Rcpp` through `collapse` and `cppRouting`. I would need to remove all three to avoid dependence on `Rcpp`.
+Well, looks like that would be difficult. Even if I removed the direct dependency, there would still be an indirect dependency on `Rcpp` through `collapse` and `cppRouting`. I would need to remove all three to avoid dependence on `Rcpp`.
+
+### `uniq_pkg_deps()`
 
 < bit about `uniq_pkg_deps()` >
 

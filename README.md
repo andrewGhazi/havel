@@ -23,6 +23,11 @@ pak::pak("andrewGhazi/havel")
 
 ## Example
 
+`havel` has two main functions: `plot_deps_graph()` and
+`uniq_pkg_deps()`.
+
+### `plot_deps_graph()`
+
 Use `plot_deps_graph()` to look up and plot the dependency graph of a
 package:
 
@@ -32,7 +37,7 @@ library(havel)
 plot_deps_graph("ggplot2")
 ```
 
-<img src="man/figures/README-example-1.png" width="800px" />
+<img src="man/figures/README-example-1.png" width="100%" />
 
 You can see that:
 
@@ -43,19 +48,21 @@ You can see that:
   eliminating the dependency on `scales` might be a good place to start
   looking.
 
-Another example: What if I really wanted to remove `Rcpp` as a
-dependency of `havel` itself?
+Another example: What if I wanted to remove `Rcpp` as a dependency of
+`havel` itself?
 
 ``` r
 plot_deps_graph("andrewGhazi/havel")
 ```
 
-<img src="man/figures/README-ex2-1.png" width="800px" />
+<img src="man/figures/README-ex2-1.png" width="100%" />
 
-Well, looks like that would be difficult. Even if I remove the direct
+Well, looks like that would be difficult. Even if I removed the direct
 dependency, there would still be an indirect dependency on `Rcpp`
 through `collapse` and `cppRouting`. I would need to remove all three to
 avoid dependence on `Rcpp`.
+
+### `uniq_pkg_deps()`
 
 \< bit about `uniq_pkg_deps()` \>
 
