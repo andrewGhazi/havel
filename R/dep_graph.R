@@ -45,6 +45,7 @@ get_gr_layout = function(edge_vec) {
 #' @param pkg package string passed to \code{\link[pak:pkg_deps]{pak::pkg_deps}}
 #' @param dep_type type(s) of dependencies to look up. Valid values are
 #'   \code{c("depends", "imports", "linkingto", "suggests")}
+#' @param n_iter number of iterations for stress graph layout computation
 #' @param pak_res a pre-computed result from
 #'   \code{\link[pak:pkg_deps]{pak::pkg_deps}}
 #' @param gg If true, use ggplot2 + ggraph to draw the plot instead of base
@@ -75,6 +76,7 @@ get_gr_layout = function(edge_vec) {
 #'
 #' @returns a ggplot
 #' @import collapse
+#' @importFrom stats rnorm
 #' @examples
 #' # Using pkgcache in examples is not allowed, uncomment to run these interactively:
 #' # plot_deps_graph("ggplot2") # ggplot2 has many downstream dependencies
@@ -94,12 +96,15 @@ plot_deps_graph = function(pkg,
                            log_col_scale = FALSE) {
 
   if (gg) {
-    rlang::check_installed(c("ggplot2", "ggraph"))
-    cli::cli_abort("ggplot2 version not copied over yet")
+    rlang::check_installed(c("ggplot2", "ggraph", "igraph", "pals"))
   }
 
   if (log_col_scale) {
     cli::cli_abort("log_col_scale not implemented yet!")
+  }
+
+  if ("suggests" %in% tolower(dep_type)) {
+    cli::cli_abort("Suggests aren't properly handled yet. (fun fact: Suggests can be cyclical!)")
   }
 
   rlang::arg_match(dep_type,
@@ -115,8 +120,6 @@ plot_deps_graph = function(pkg,
   # This should handle pkg = "." I think?
   if (pkg != sbt(pak_res, direct)$ref[1]) pkg = sbt(pak_res, direct)$package[1]
 
-  # TODO: implement igraph::neighborhood_size
-  # ec = igraph::ecount(gr)
   evt = t(edge_vec)
 
   # TODO: strip repo owner names from pkg
@@ -134,38 +137,55 @@ plot_deps_graph = function(pkg,
 
   gr = cppRouting::makegraph(df, directed = FALSE)
 
-  D = cppRouting::get_distance_matrix(gr, from = nds, to = nds) # yep this is lighter
+  if (gg) {
+    if (length(edge_vec) == 0) {
+      gr = igraph::make_empty_graph(1) |>
+        igraph::set_vertex_attr("label", value = pkg) |>
+        igraph::set_vertex_attr("name", value = pkg)
+    } else {
+      gr = igraph::make_directed_graph(edge_vec[,ncol(edge_vec):1])
+    }
 
-  x_init = matrix(rnorm(n*2), ncol = 2) # TODO do something better?
+    gg_pkg_graph(pkg, gr, dep_type,
+                 lwd, pad_h, pad_w, cex)
+  } else {
+    D = cppRouting::get_distance_matrix(gr, from = nds, to = nds) # yep this is lighter
 
-  layout_mat = stress_layout(x_init, D, n_iter, 1e-3) # TODO make configurable
+    x_init = matrix(rnorm(n*2), ncol = 2) # TODO do something better?
 
-  plot_df = layout_mat |>
-    qDT() |>
-    mtt(pkg = nds) |>
-    join(ns_df, on = "pkg", verbose = FALSE) |>
-    mtt(n_deps = lengths(ds_deps),
-        col_pos = floor(99*n_deps / max(n_deps) + 1),
-        pkg_col = parula[col_pos])
+    layout_mat = stress_layout(x_init, D, n_iter, 1e-3) # TODO make configurable
 
-  draw_pkg_graph(plot_df, evt, pkg,
-                 lwd = lwd,
-                 pad_h = pad_h,
-                 pad_w = pad_w,
-                 cex = cex
-                 )
+    plot_df = layout_mat |>
+      qDT() |>
+      mtt(pkg = nds) |>
+      join(ns_df, on = "pkg", verbose = FALSE) |>
+      mtt(n_deps = lengths(ds_deps),
+          col_pos = floor(99*n_deps / max(n_deps) + 1),
+          pkg_col = parula[col_pos])
 
+    draw_pkg_graph(plot_df, evt, pkg,
+                   lwd = lwd,
+                   pad_h = pad_h,
+                   pad_w = pad_w,
+                   cex = cex)
+
+  }
 }
 
 gg_pkg_graph = function(pkg, gr, dep_type,
                         lwd, pad_h, pad_w, cex) {
+
   # TODO call this fn, pass in args
+  # TODO add adaptive label color to this version
+  # TODO stretch goal: widen x range to allow for long pkg names on edges
+
   ec = igraph::ecount(gr)
 
   if (ec > 0 ) {
     edges_geom = ggraph::geom_edge_link(arrow = grid::arrow(length = grid::unit(1.5, "mm"),
                                                             type = "closed"),
-                                        ggplot2::aes(end_cap = ggraph::label_rect(node2.name)),
+                                        ggplot2::aes(end_cap = ggraph::label_rect(node2.name),
+                                                     lwd = lwd),
                                         color = "#222222")
   } else {
     edges_geom = NULL
@@ -189,19 +209,28 @@ gg_pkg_graph = function(pkg, gr, dep_type,
 
   }
 
+  if (pad_h != .09) cli::cli_alert_warning("{.var pad_h} ignored in ggplot version, {.var pad_w} used for padding all sides.")
+
   gr |>
     ggraph::ggraph(ifelse(ec > 1, "stress", "tree")) +
     edges_geom +
-    ggraph::geom_node_label(fill_aes) +
+    ggraph::geom_node_label(fill_aes,
+                            label.padding = grid::unit(3*pad_w, "lines"),
+                            size = 3.88*cex) + # Default text size = 3.88
     fill_scale +
     ggplot2::theme_dark() +
     ggplot2::theme(axis.title        = ggplot2::element_blank(),
                    axis.text         = ggplot2::element_blank(), axis.ticks = ggplot2::element_blank(),
-                   plot.background   = ggplot2::element_rect(fill = "#444444"),
+                   plot.background   = ggplot2::element_rect(fill = "#444444",
+                                                             color = "#444444"),
                    panel.grid        = ggplot2::element_blank(),
                    legend.background = ggplot2::element_rect(fill = "#666666"),
-                   legend.ticks      = ggplot2::element_line(colour = "#333333")) +
-    ggplot2::labs(fill = "n_deps")
+                   title             = ggplot2::element_text(color = "grey94"),
+                   legend.title      = ggplot2::element_text(color = "#111111"),
+                   legend.text       = ggplot2::element_text(color = "#111111"),
+                   legend.ticks      = ggplot2::element_line(color = "#111111")) +
+    ggplot2::labs(fill = "n_deps",
+                  title = pkg)
 
 }
 
@@ -209,13 +238,14 @@ gg_pkg_graph = function(pkg, gr, dep_type,
 #
 # }
 
+#' @importFrom grDevices rgb
+#' @importFrom graphics arrows par rect text title
 draw_pkg_graph = function(plot_df, evt, pkg, lwd,
                           pad_h = pad_h,
                           pad_w = pad_w,
                           cex = cex) {
 
-
-# par ---------------------------------------------------------------------
+  # par ---------------------------------------------------------------------
 
   par(bg = "grey41",
       mar = c(2,2,1.5,1),
@@ -232,10 +262,11 @@ draw_pkg_graph = function(plot_df, evt, pkg, lwd,
         te = V2 + .5 * cxy[2])
 
   xr = c(fmin(plot_df$ws) - 2*pad_w, fmax(plot_df$we) + 2*pad_w)
+
   yr = c(fmin(plot_df$ts) - 2*pad_h, fmax(plot_df$te) + 2*pad_h)
 
 
-# initialize plot ---------------------------------------------------------
+  # initialize plot ---------------------------------------------------------
 
 
   plot(
@@ -250,21 +281,26 @@ draw_pkg_graph = function(plot_df, evt, pkg, lwd,
     ylab = ""
   )
 
-# legend ------------------------------------------------------------------
-
+  # legend ------------------------------------------------------------------
 
   li = floor(seq(1,100, length.out = 30))
+
   labs = seq(1, max(plot_df$n_deps), length.out = 4) |>
     floor() |>
     as.character()
+
   lcols = parula[li]
+
   ly = yr[1] + .75*diff(yr) + (1:30 / 30 * .2*diff(yr))
+
   lye = ly + (1 / 30 * .2*diff(yr))
-  lx = xr[1] + .9*diff(xr)
+
+  lx = xr[1] + .95*diff(xr)
+
   lxe = lx + .02*diff(xr)
 
-
   rect(lx, ly, lxe, lye, col = lcols, border = rgb(0,0,0,0))
+
   text(cex = .85,
        labels = "# deps",
        x = lx,
@@ -288,7 +324,7 @@ draw_pkg_graph = function(plot_df, evt, pkg, lwd,
 
   par(adj = .5)
 
-# rects/labels/arrows data ------------------------------------------------
+  # rects/labels/arrows data ------------------------------------------------
 
   plot_df = plot_df |>
     mtt(w = graphics::strwidth(pkg, cex = cex) + pad_w,
@@ -348,26 +384,6 @@ draw_pkg_graph = function(plot_df, evt, pkg, lwd,
     )
   }
 }
-
-# get_region = function(dxmm, dymm, h2, w2) {
-#   ifelse(dymm < 0 && abs(dymm) > h2,
-#          ifelse(),
-#          )
-#   if () { # 1,2,3
-#     if (dxmm > 0 && abs(dxmm) > w2) {
-#       3
-#     } else if (dxmm < 0 && abs(dxmm) > w2) {
-#       1
-#     } else {
-#       2
-#     }
-#   } else if (dymm > 0 && abs(dymm) > h2) { # 6, 7, 8
-#     NA
-#   } else {
-#     NA
-#   }
-#
-# }
 
 get_pkg_graph = function(pkg, dep_type, pak_res) {
 
