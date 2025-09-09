@@ -157,6 +157,54 @@ plot_deps_graph = function(pkg,
 
 }
 
+gg_pkg_graph = function(pkg, gr, dep_type,
+                        lwd, pad_h, pad_w, cex) {
+  # TODO call this fn, pass in args
+  ec = igraph::ecount(gr)
+
+  if (ec > 0 ) {
+    edges_geom = ggraph::geom_edge_link(arrow = grid::arrow(length = grid::unit(1.5, "mm"),
+                                                            type = "closed"),
+                                        ggplot2::aes(end_cap = ggraph::label_rect(node2.name)),
+                                        color = "#222222")
+  } else {
+    edges_geom = NULL
+  }
+
+  if ("suggests" %in% dep_type && !igraph::is_acyclic(gr)) {
+    cli::cli_alert_warning("Cycle detected among suggested packages. Can't color nodes by number of dependencies.")
+    fill_aes = ggplot2::aes(label = name)
+    fill_scale = NULL
+  } else {
+    fill_scale = ggplot2::scale_fill_gradientn(colors = pals::parula(100)[12:97])
+    fill_aes = if (ec == 0) {
+      ggplot2::aes(label = pkg)
+    } else {
+      ggplot2::aes(label = name,
+                   fill = igraph::neighborhood_size(gr,
+                                                    mode = "out",
+                                                    order = ec,
+                                                    mindist = 1))
+    }
+
+  }
+
+  gr |>
+    ggraph::ggraph(ifelse(ec > 1, "stress", "tree")) +
+    edges_geom +
+    ggraph::geom_node_label(fill_aes) +
+    fill_scale +
+    ggplot2::theme_dark() +
+    ggplot2::theme(axis.title        = ggplot2::element_blank(),
+                   axis.text         = ggplot2::element_blank(), axis.ticks = ggplot2::element_blank(),
+                   plot.background   = ggplot2::element_rect(fill = "#444444"),
+                   panel.grid        = ggplot2::element_blank(),
+                   legend.background = ggplot2::element_rect(fill = "#666666"),
+                   legend.ticks      = ggplot2::element_line(colour = "#333333")) +
+    ggplot2::labs(fill = "n_deps")
+
+}
+
 # get_region = function(th, p2_th, pm_th, pmp2_th) {
 #
 # }
@@ -166,10 +214,10 @@ draw_pkg_graph = function(plot_df, evt, pkg, lwd,
                           pad_w = pad_w,
                           cex = cex) {
 
-  pdw = pad_w
-  pdh = pad_h
 
-  par(bg = "grey37",
+# par ---------------------------------------------------------------------
+
+  par(bg = "grey41",
       mar = c(2,2,1.5,1),
       cex = 1.2,
       family = "Arial",
@@ -186,6 +234,10 @@ draw_pkg_graph = function(plot_df, evt, pkg, lwd,
   xr = c(fmin(plot_df$ws) - 2*pad_w, fmax(plot_df$we) + 2*pad_w)
   yr = c(fmin(plot_df$ts) - 2*pad_h, fmax(plot_df$te) + 2*pad_h)
 
+
+# initialize plot ---------------------------------------------------------
+
+
   plot(
     x = NULL,
     y = NULL,
@@ -194,11 +246,12 @@ draw_pkg_graph = function(plot_df, evt, pkg, lwd,
     axes = FALSE,
     xlim = xr,
     ylim = yr,
-    # xlim = c(fmin(plot_df$xs), fmax(plot_df$xe)),
-    # ylim = c(fmin(plot_df$ys), fmax(plot_df$ye)),
     xlab = "",
     ylab = ""
   )
+
+# legend ------------------------------------------------------------------
+
 
   li = floor(seq(1,100, length.out = 30))
   labs = seq(1, max(plot_df$n_deps), length.out = 4) |>
@@ -218,36 +271,34 @@ draw_pkg_graph = function(plot_df, evt, pkg, lwd,
        y = max(lye) ,
        pos = 3,
        offset = .3,
-       col = "grey90")
+       col = "grey94")
 
   text(lx, ly[c(1,10,20,30)],
        labels = labs,
        pos = 2,
        offset = .2,
-       col = "grey90",
+       col = "grey94",
        cex = .5)
 
-  xls = xr[1] + .02*diff(xr)
-  xle = xls + .02*diff(xr)
-  yls = yr[1] + .8*diff(yr)
-  yle = yls + .1*diff(yr)
-  # Draw 32 rectangles, label four points along the side
+  # title -------------------------------------------------------------------
 
   par(adj = 0)
 
-  title(pkg, col.main = "grey90")
+  title(pkg, col.main = "grey94")
 
   par(adj = .5)
 
+# rects/labels/arrows data ------------------------------------------------
+
   plot_df = plot_df |>
-    mtt(w = graphics::strwidth(pkg, cex = cex) + pdw,
-        h = graphics::strheight("T", cex = cex) + pdh,
+    mtt(w = graphics::strwidth(pkg, cex = cex) + pad_w,
+        h = graphics::strheight("T", cex = cex) + pad_h,
         xs = V1 - w/2,
         xe = V1 + w/2,
         ys = V2 - h/2,
         ye = V2 + h/2,
-        text_col = c("#F2F2F2", "grey15")[(col_pos > 50) + 1]) |> # TODO Make this be light for low n_deps) |>
-    roworder(n_deps)
+        text_col = c("#F2F2F2", "grey15")[(col_pos > 50) + 1]) |>
+    roworder(n_deps) # top-level package will always be on top
 
   arrow_df = evt |>
     qDT() |>
@@ -260,9 +311,11 @@ draw_pkg_graph = function(plot_df, evt, pkg, lwd,
         reg = get_region(abs(th), p2_th, p2_high, pi))  |>
     mtt(get_axy(reg, xs, xe, ys, ye, th, p2x, p2y)) # needs to return an n x 2 df with columns ax and ay
 
-  # ex
-  # tmp = \(x,y) data.frame(nx = 2*x, ny = 3*y)
-  # mtcars |> head() |> mtt(tmp(mpg, cyl))
+  # loop through dependencies -----------------------------------------------
+  # You have to loop because labels won't overlap their respective rectangles
+  # properly if you do all one then the other. Also it makes arrows cross
+  # over/under in the most pleasing way.
+
   for (i in 1:nrow(plot_df)) {
 
     arrow_i = arrow_df |> sbt(whichv(p1, plot_df$pkg[i]))
