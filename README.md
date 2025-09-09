@@ -54,7 +54,8 @@ plot_deps_graph("andrewGhazi/havel")
 
 Well, looks like that would be difficult. Even if I remove the direct
 dependency, there would still be an indirect dependency on `Rcpp`
-through `collapse` and `cppRouting`.
+through `collapse` and `cppRouting`. I would need to remove all three to
+avoid dependence on `Rcpp`.
 
 \< bit about `uniq_pkg_deps()` \>
 
@@ -84,7 +85,7 @@ There are other packages / posts out there on this type of thing:
   versatile lookups of packages on Bioc, GitHub, etc.
 - `havel` itself is fairly light and fast, depending only on pak, some
   fastverse packages, and base R graphics…
-  - …but it includes a ggplot version in the Suggests if you prefer
+  - …but it includes a ggplot version too in the Suggests if you prefer
     that. Set `gg = TRUE`.
 - The default plotting parameters are carefully hand-crafted to look
   nice 😊
@@ -93,14 +94,17 @@ There are other packages / posts out there on this type of thing:
 
 > Why’d you make this?
 
+- I was annoyed by packages with hundreds of dependencies and want to be
+  able to quickly generate passive-aggressive plots visualizing their
+  bloat.
 - I wanted to learn about graph algorithms and R’s low-level graphics
   packages.
-- I was annoyed by packages with hundreds of dependencies.
 
 > What’s with the name?
 
 Havel’s Ring is an item in Dark Souls that helps you deal with excessive
-burdens.
+burdens. (Apart from that, every permutation of “pkg”/“dep”/“graph” was
+taken.)
 
 ## TODO
 
