@@ -97,12 +97,12 @@ There are other packages / posts out there on this type of thing:
 - The default plotting parameters are carefully hand-crafted to look
   nice 😊
 
-## Misc
+## FAQ
 
 > Why’d you make this?
 
-- I was annoyed by packages with hundreds of dependencies and want to be
-  able to quickly generate passive-aggressive plots visualizing their
+- I was annoyed by packages with hundreds of dependencies and wanted to
+  be able to quickly generate passive-aggressive plots visualizing their
   bloat.
 - I wanted to learn about graph algorithms and R’s low-level graphics
   packages.
@@ -110,14 +110,14 @@ There are other packages / posts out there on this type of thing:
 > What’s with the name?
 
 Havel’s Ring is an item in Dark Souls that helps you deal with excessive
-burdens. (Apart from that, every permutation of “pkg”/“dep”/“graph” was
-taken.)
+burdens. (Plus, every permutation of “pkg”/“dep”/“graph” was taken.)
 
 ## TODO
 
 - more tests
   - properly handle cases with 0/1 deps, local packages, etc
 - color edges by dependency type
-- copy over ggplot version
+- ~~copy over ggplot version~~ ✓
 - highlight direct dependencies
 - uniq_pkg_deps() function
+- eliminate my precious pipes so I don’t require R \>= 4.1

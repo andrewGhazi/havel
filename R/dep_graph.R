@@ -245,6 +245,8 @@ draw_pkg_graph = function(plot_df, evt, pkg, lwd,
                           pad_w = pad_w,
                           cex = cex) {
 
+  lght = "grey95"
+
   # par ---------------------------------------------------------------------
 
   par(bg = "grey41",
@@ -307,20 +309,20 @@ draw_pkg_graph = function(plot_df, evt, pkg, lwd,
        y = max(lye) ,
        pos = 3,
        offset = .3,
-       col = "grey94")
+       col = lght)
 
   text(lx, ly[c(1,10,20,30)],
        labels = labs,
        pos = 2,
        offset = .2,
-       col = "grey94",
+       col = lght,
        cex = .5)
 
   # title -------------------------------------------------------------------
 
   par(adj = 0)
 
-  title(pkg, col.main = "grey94")
+  title(pkg, col.main = lght)
 
   par(adj = .5)
 
@@ -348,6 +350,7 @@ draw_pkg_graph = function(plot_df, evt, pkg, lwd,
     mtt(get_axy(reg, xs, xe, ys, ye, th, p2x, p2y)) # needs to return an n x 2 df with columns ax and ay
 
   # loop through dependencies -----------------------------------------------
+
   # You have to loop because labels won't overlap their respective rectangles
   # properly if you do all one then the other. Also it makes arrows cross
   # over/under in the most pleasing way.
