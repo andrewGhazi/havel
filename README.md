@@ -41,12 +41,11 @@ plot_deps_graph("ggplot2")
 
 You can see that:
 
-- `ggplot2` has 31 dependencies in total (direct and indirect).
-- On the left side that the `scales` package contributes several
-  dependencies that nothing else depends on. If the `ggplot2` developers
-  were looking to lighten their package (not that they should),
-  eliminating the dependency on `scales` might be a good place to start
-  looking.
+- `ggplot2` has 21 dependencies in total (direct and indirect).
+- On the right, the `scales` package contributes several dependencies
+  that nothing else depends on. If the `ggplot2` developers were looking
+  to lighten their package (not that they should), eliminating the
+  dependency on `scales` might be a good place to start looking.
 
 Another example: What if I wanted to remove `Rcpp` as a dependency of
 `havel` itself?

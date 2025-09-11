@@ -32,7 +32,7 @@ get_gr_layout = function(edge_vec) {
 
   D = cppRouting::get_distance_matrix(gr, from = nds, to = nds)
 
-  x_init = matrix(rnorm(n*2), ncol = 2)
+  x_init = stats::cmdscale(D) + rnorm(2*nrow(D), sd = .3)
 
   stress_layout(x_init, D, iter = 10, tol = 1e-3)
 
@@ -76,7 +76,7 @@ get_gr_layout = function(edge_vec) {
 #'
 #' @returns a ggplot
 #' @import collapse
-#' @importFrom stats rnorm
+#' @importFrom stats rnorm cmdscale
 #' @examples
 #' # Using pkgcache in examples is not allowed, uncomment to run these interactively:
 #' # plot_deps_graph("ggplot2") # ggplot2 has many downstream dependencies
@@ -91,7 +91,7 @@ plot_deps_graph = function(pkg,
                            lwd = 1,
                            cex = 1,
                            pad_h = .09,
-                           pad_w = .08,
+                           pad_w = .07,
                            arw = 1,
                            log_col_scale = FALSE) {
 
@@ -151,7 +151,7 @@ plot_deps_graph = function(pkg,
   } else {
     D = cppRouting::get_distance_matrix(gr, from = nds, to = nds) # yep this is lighter
 
-    x_init = matrix(rnorm(n*2), ncol = 2) # TODO do something better?
+    x_init = stats::cmdscale(D) + rnorm(2*nrow(D), sd = .3)
 
     layout_mat = stress_layout(x_init, D, n_iter, 1e-3) # TODO make configurable
 
@@ -185,7 +185,7 @@ gg_pkg_graph = function(pkg, gr, dep_type,
     edges_geom = ggraph::geom_edge_link(arrow = grid::arrow(length = grid::unit(1.5, "mm"),
                                                             type = "closed"),
                                         ggplot2::aes(end_cap = ggraph::label_rect(node2.name),
-                                                     lwd = lwd),
+                                                     lwd = .33*lwd),
                                         color = "#222222")
   } else {
     edges_geom = NULL
