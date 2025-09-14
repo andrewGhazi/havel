@@ -59,7 +59,7 @@ set.seed(8)
 ```
 
 ```{r ex2, dpi=300, message=FALSE}
-plot_deps_graph("andrewGhazi/havel")
+plot_deps_graph("andrewGhazi/havel") # looks it up on GitHub
 ```
 
 Well, looks like that would be difficult. Even if I removed the direct dependency, there would still be an indirect dependency on `Rcpp` through `collapse` and `cppRouting`. I would need to remove all three to avoid dependence on `Rcpp`.

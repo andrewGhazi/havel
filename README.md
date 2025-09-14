@@ -51,7 +51,7 @@ Another example: What if I wanted to remove `Rcpp` as a dependency of
 `havel` itself?
 
 ``` r
-plot_deps_graph("andrewGhazi/havel")
+plot_deps_graph("andrewGhazi/havel") # looks it up on GitHub
 ```
 
 <img src="man/figures/README-ex2-1.png" width="100%" />

@@ -1,41 +1,30 @@
 
-
-parula = c("#352A87", "#342D8F", "#343197", "#34359F", "#3439A7", "#343DAF",
-           "#2F41B7", "#2946BE", "#234BC6", "#1D50CE", "#1755D5", "#125AD9",
-           "#0F5EDB", "#0C61DC", "#0865DD", "#0569DF", "#036CDF", "#066FDE",
-           "#0872DC", "#0B75DB", "#0D77DA", "#107AD8", "#107CD7", "#117FD6",
-           "#1181D5", "#1284D4", "#1286D3", "#1189D2", "#0F8CD2", "#0D90D1",
-           "#0B93D1", "#0996D1", "#0898CF", "#079BCE", "#079DCC", "#06A0CB",
-           "#06A2C9", "#06A4C7", "#07A6C4", "#08A8C2", "#0AAABF", "#0BABBC",
-           "#0DADB9", "#11AEB6", "#16B0B2", "#1AB1AF", "#1FB2AC", "#23B4A8",
-           "#29B5A5", "#2FB6A1", "#36B89E", "#3CB99A", "#42BA97", "#49BB93",
-           "#51BC8F", "#58BC8B", "#60BD88", "#67BD84", "#6EBE80", "#75BE7D",
-           "#7DBE7A", "#84BE77", "#8BBE74", "#91BE71", "#97BE6F", "#9DBE6C",
-           "#A3BD6A", "#A9BD67", "#AFBC65", "#B5BC63", "#BABC61", "#C0BB5F",
-           "#C5BB5C", "#CBBA5A", "#D0BA58", "#D5BA56", "#DAB953", "#E0B951",
-           "#E5B94F", "#E9B94B", "#EEBA48", "#F2BB44", "#F6BC40", "#FBBD3D",
-           "#FCC03A", "#FCC336", "#FBC633", "#FBC930", "#FBCD2D", "#FAD02A",
-           "#F9D428", "#F8D725", "#F7DB22", "#F5DF20", "#F5E31D", "#F5E71A",
-           "#F6EC17", "#F7F114", "#F8F611", "#F9FB0E")
-
-get_gr_layout = function(edge_vec) {
-
-  df = data.frame(from = edge_vec[1,],
-                  to = edge_vec[2,],
-                  cost = 1)
+get_gr_layout = function(df, nds, init) {
 
   gr = cppRouting::makegraph(df, directed = FALSE)
 
-  nds = funique(c(df$from, df$to))
-
-  n = length(nds)
-
   D = cppRouting::get_distance_matrix(gr, from = nds, to = nds)
 
-  x_init = stats::cmdscale(D) + rnorm(2*nrow(D), sd = .3)
+  if (init == "mds") {
+    x_init = stats::cmdscale(D) + rnorm(2*nrow(D), sd = .3)
+  } else {
+    x_init = matrix(rnorm(2*nrow(D), sd = .3), ncol = 2)
+  }
 
   stress_layout(x_init, D, iter = 10, tol = 1e-3)
+}
 
+get_igraph_gr = function(pkg, edge_vec) {
+
+  if (length(edge_vec) == 0) {
+    gr = igraph::make_empty_graph(1) |>
+      igraph::set_vertex_attr("label", value = pkg) |>
+      igraph::set_vertex_attr("name", value = pkg)
+  } else {
+    gr = igraph::make_directed_graph(edge_vec[,ncol(edge_vec):1])
+  }
+
+  gr
 }
 
 
@@ -45,6 +34,7 @@ get_gr_layout = function(edge_vec) {
 #' @param pkg package string passed to \code{\link[pak:pkg_deps]{pak::pkg_deps}}
 #' @param dep_type type(s) of dependencies to look up. Valid values are
 #'   \code{c("depends", "imports", "linkingto", "suggests")}
+#' @param init how to initialize layout, MDS (default) or randomly
 #' @param n_iter number of iterations for stress graph layout computation
 #' @param pak_res a pre-computed result from
 #'   \code{\link[pak:pkg_deps]{pak::pkg_deps}}
@@ -74,6 +64,10 @@ get_gr_layout = function(edge_vec) {
 #'   The layout in the base graphics version is stochastic - if it looks weird
 #'   just run it again.
 #'
+#'   Random layout initialization only applies to base graphics, and typically
+#'   looks worse than MDS initialization. Generally only useful if the MDS
+#'   layout happens to overlap the legend or something.
+#'
 #' @returns a ggplot
 #' @import collapse
 #' @importFrom stats rnorm cmdscale
@@ -85,8 +79,9 @@ get_gr_layout = function(edge_vec) {
 #' @export
 plot_deps_graph = function(pkg,
                            dep_type = c("depends", "imports", "linkingto"),
-                           n_iter = 100,
                            pak_res = NULL,
+                           n_iter = 100,
+                           init = "mds",
                            gg = FALSE,
                            lwd = 1,
                            cex = 1,
@@ -117,13 +112,9 @@ plot_deps_graph = function(pkg,
 
   edge_vec = prgc[[2]]
 
-  # This should handle pkg = "." I think?
-  if (pkg != sbt(pak_res, direct)$ref[1]) pkg = sbt(pak_res, direct)$package[1]
+  pkg = clean_pkg_nm(pkg, pak_res)
 
   evt = t(edge_vec)
-
-  # TODO: strip repo owner names from pkg
-  if (grepl("\\/", pkg)) pkg = pak_res |> sbt(direct) |> getElement('package')
 
   ns_df = get_deps_memo(evt[, 1], evt[, 2], pkg)
 
@@ -135,25 +126,16 @@ plot_deps_graph = function(pkg,
 
   n = length(nds)
 
-  gr = cppRouting::makegraph(df, directed = FALSE)
-
   if (gg) {
-    if (length(edge_vec) == 0) {
-      gr = igraph::make_empty_graph(1) |>
-        igraph::set_vertex_attr("label", value = pkg) |>
-        igraph::set_vertex_attr("name", value = pkg)
-    } else {
-      gr = igraph::make_directed_graph(edge_vec[,ncol(edge_vec):1])
-    }
+    gr = get_igraph_gr(pkg, edge_vec)
 
     gg_pkg_graph(pkg, gr, dep_type,
                  lwd, pad_h, pad_w, cex)
   } else {
-    D = cppRouting::get_distance_matrix(gr, from = nds, to = nds) # yep this is lighter
 
-    x_init = stats::cmdscale(D) + rnorm(2*nrow(D), sd = .3)
+    layout_mat = get_gr_layout(df, nds, init)
 
-    layout_mat = stress_layout(x_init, D, n_iter, 1e-3) # TODO make configurable
+    # layout_mat = stress_layout(x_init, D, n_iter, 1e-3) # TODO make configurable
 
     plot_df = layout_mat |>
       qDT() |>
@@ -249,7 +231,7 @@ draw_pkg_graph = function(plot_df, evt, pkg, lwd,
 
   # par ---------------------------------------------------------------------
 
-  par(bg = "grey41",
+  par(bg = "grey43",
       mar = c(2,2,1.5,1),
       cex = 1.2,
       family = "Arial",
@@ -284,6 +266,8 @@ draw_pkg_graph = function(plot_df, evt, pkg, lwd,
   )
 
   # legend ------------------------------------------------------------------
+
+  # TODO: draw the legend at the end so it's on top?
 
   li = floor(seq(1,100, length.out = 30))
 
@@ -368,7 +352,7 @@ draw_pkg_graph = function(plot_df, evt, pkg, lwd,
            length = .25*plot_df$h[1],
            angle = 20)
 
-    #TODO: make border red if it's a direct dependency of the top-level one.
+    #TODO: make border optionally red if it's a direct dependency of the top-level one.
     rect(
       col = plot_df$pkg_col[i],
       xleft = plot_df$xs[i],
@@ -387,6 +371,7 @@ draw_pkg_graph = function(plot_df, evt, pkg, lwd,
     )
   }
 }
+
 
 get_pkg_graph = function(pkg, dep_type, pak_res) {
 

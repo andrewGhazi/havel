@@ -7,13 +7,14 @@
 plot_deps_graph(
   pkg,
   dep_type = c("depends", "imports", "linkingto"),
-  n_iter = 100,
   pak_res = NULL,
+  n_iter = 100,
+  init = "mds",
   gg = FALSE,
   lwd = 1,
   cex = 1,
   pad_h = 0.09,
-  pad_w = 0.08,
+  pad_w = 0.07,
   arw = 1,
   log_col_scale = FALSE
 )
@@ -24,10 +25,12 @@ plot_deps_graph(
 \item{dep_type}{type(s) of dependencies to look up. Valid values are
 \code{c("depends", "imports", "linkingto", "suggests")}}
 
-\item{n_iter}{number of iterations for stress graph layout computation}
-
 \item{pak_res}{a pre-computed result from
 \code{\link[pak:pkg_deps]{pak::pkg_deps}}}
+
+\item{n_iter}{number of iterations for stress graph layout computation}
+
+\item{init}{how to initialize layout, MDS (default) or randomly}
 
 \item{gg}{If true, use ggplot2 + ggraph to draw the plot instead of base
 graphics.}
@@ -69,6 +72,10 @@ If you include \code{"suggests"} among the dependency types to look
 
   The layout in the base graphics version is stochastic - if it looks weird
   just run it again.
+
+  Random layout initialization only applies to base graphics, and typically
+  looks worse than MDS initialization. Generally only useful if the MDS
+  layout happens to overlap the legend or something.
 }
 \examples{
 # Using pkgcache in examples is not allowed, uncomment to run these interactively:
