@@ -31,3 +31,11 @@ clean_pkg_nm = function(pkg, pak_res) {
 
   pkg
 }
+
+c_deps = function(dep_list) {
+  res = unlist(dep_list) |> funique()
+
+  if (length(res) == 0) return(list(NULL))
+
+  list(res)
+}

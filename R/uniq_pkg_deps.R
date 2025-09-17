@@ -38,7 +38,27 @@ uniq_pkg_deps = function(pkg,
 
   evt = t(edge_vec)
 
-  ns_df = get_deps_memo(evt[, 1], evt[, 2], pkg)
+  ns_df = get_deps_memo(evt[, 1], evt[, 2], pkg) |> list2DF()
+
+  # as.data.table(ns_df)[,unlist(ds_deps), by = pkg]
+
+  dir_deps = pak_res |>
+    sbt(package %==% pkg) |>
+    pull1("deps") |>
+    sbt(type %in% dep_type) |>
+    sbt(ref != "R") |>
+    get_elem("package")
+
+  combn_df <- combn(dir_deps, order) |>
+    t() |>
+    qDT() |>
+    setColnames(paste0("p", 1:order)) |>
+    mtt(tuplet = 1:choose(length(dir_deps), order)) |>
+    pivot(ids = "tuplet", names = list("p_i", "pkg")) |>
+    join(ns_df, on = "pkg", verbose = FALSE) |>
+    gby(tuplet) |>
+    smr(tuplet_deps = c_deps(ds_deps),
+        p = list(funique(pkg)))
 
   # TODO: adapt from here
 
