@@ -42,103 +42,72 @@ uniq_pkg_deps = function(pkg,
 
   # as.data.table(ns_df)[,unlist(ds_deps), by = pkg]
 
-  dir_deps = pak_res |>
+  dir_deps = pak_res |> # TODO: move this behavior to separate function
     sbt(package %==% pkg) |>
     pull1("deps") |>
-    sbt(type %in% dep_type) |>
+    sbt(tolower(type) %in% dep_type) |>
     sbt(ref != "R") |>
     get_elem("package")
 
-  combn_df <- combn(dir_deps, order) |>
+  combn_df = combn(dir_deps, order) |>
     t() |>
     qDT() |>
     setColnames(paste0("p", 1:order)) |>
-    mtt(tuplet = 1:choose(length(dir_deps), order)) |>
-    pivot(ids = "tuplet", names = list("p_i", "pkg")) |>
+    mtt(group = 1:choose(length(dir_deps), order)) |>
+    pivot(ids = "group", names = list("p_i", "pkg")) |>
     join(ns_df, on = "pkg", verbose = FALSE) |>
-    gby(tuplet) |>
-    smr(tuplet_deps = c_deps(ds_deps),
-        p = list(funique(pkg)))
+    roworder(group) |>
+    qDT()
 
-  # TODO: adapt from here
+  # TODO: loop through groups
 
-  dir_deps = pak_res |>
-    sbt(direct) |>
-    pull1("deps") |>
-    sbt(ref != "R" &
-          !grepl("[Ss]uggests|[Ee]nhances", type) &
-          !fduplicated(package))
+  # There's probably some fancy database-like operation for this, but we'll just
+  # settle for the naive way: loop over groups. For each group, find any
+  # dependencies unique to that group that are not found in the other groups.
+  n_group = max(combn_df$group)
 
-  if (nrow(dir_deps) == 0) {
-    cli::cli_alert_success("No dependencies")
-    return(invisible(NULL))
+  empty_list = replicate(n_group, character(), simplify = FALSE)
+
+  res_df = data.frame(group = seq_len(n_group)) |>
+    mtt(group_pkgs = empty_list,
+        n_uniq = 0,
+        uniq_deps = empty_list)
+
+  for (i in res_df$group) {
+    # TODO: progress bar? This could be slow for high order number.
+    # TODO: redo in C++
+
+    i_df  = combn_df |> sbt(group %==% i)
+
+    i_pkgs = i_df$pkg
+
+    ni_df = combn_df |>
+      gby(group) |>
+      mtt(any_i = any(pkg %in% i_pkgs)) |>
+      fungroup() |>
+      sbt(!any_i)
+
+    i_ds  =  i_df$ds_deps |> unlist() |> funique()
+    i_ds = i_ds[i_ds %!iin% dir_deps]
+
+    ni_ds = ni_df$ds_deps |> unlist() |> funique()
+
+    res_i = i_ds[i_ds %!iin% ni_ds]
+
+    res_df$group_pkgs[[i]] = i_df$pkg
+    res_df$uniq_deps[[i]] = res_i
+    res_df$n_uniq[i] = length(res_i) + order
   }
 
-  all_deps = pak_res$deps |>
-    rowbind() |>
-    mtt(type = tolower(type)) |>
-    sbt(type %in% c("depends", "imports", "linkingto") & package != "R") |>
-    getElement("package") |>
-    funique()
+  res_df = res_df |>
+    roworder(-n_uniq) |>
+    slt(-group)
 
-  pkg_combn = combn(dir_deps$package, order)
+  id_df = res_df$group_pkgs |>
+    unlist2d(idcols = FALSE) |>
+    frename(\(x) gsub("V", "pkg", x))
 
-  n_dir = nrow(dir_deps) # number of direct dependencies
-  n_tot = length(all_deps)
-  n_com = ncol(pkg_combn)
+  add_vars(id_df, res_df |> slt(-group_pkgs))
 
-  dep_mat = matrix(0,
-                   ncol = n_dir + 1,
-                   nrow = n_tot,
-                   dimnames = list(all_deps,
-                                   c(dir_deps$package, pkg)))
-
-
-  for (i in seq_len(n_dir)) {
-    # dep_deps = dep_deps |>
-    #   pull1(deps) |>
-    #   sbt(type %in% c("depends", "imports", "linkingto") & package != "R") |>
-    #   get_elem("package")
-    # ^ This doesn't work. pak doesn't list indirect dependencies in `package`.
-    # Need to form the graph then look up children from there.
-
-    all_ds = igraph::neighborhood(gr,
-                                  order = n_tot,
-                                  nodes = dir_deps$package[i],
-                                  mode = "out",
-                                  mindist = 1) |>
-      lapply(names) |>
-      unlist() |>
-      funique()
-
-    iv = all_deps %in% all_ds
-
-    dep_mat[iv,i] = 1
-  }
-  dep_mat[,n_dir+1] = 1
-
-  n_uniq = vector("numeric", n_com)
-  udv = vector("list", n_com)
-
-  for (i in seq_len(n_com)) {
-
-    compl = dep_mat[,-which(dir_deps$package %in% pkg_combn[,i]),
-                    drop=FALSE]
-
-    od = rowSums(compl) == 1
-
-    ud = od & !(names(od) %in% dir_deps$package)
-
-    n_uniq[i] = sum(ud)
-    udv[[i]] = names(which(ud))
-  }
-
-  pkg_combn |>
-    t() |>
-    qDT() |>
-    setColnames(paste0("pkg", 1:order)) |>
-    mtt(n_uniq_deps = n_uniq + order,
-        uniq_deps = udv) |> # add order because things depend on themselves at least
-    roworder(-n_uniq_deps)
 
 }

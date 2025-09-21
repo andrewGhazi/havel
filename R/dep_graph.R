@@ -378,6 +378,7 @@ get_pkg_graph = function(pkg, dep_type, pak_res) {
   dep_type = c("depends", "imports", "linkingto")
 
   pak_res = pak_res %||% pak::pkg_deps(pkg)
+  # ^ TODO: try to fall back to tools::package_dependencies() if this fails
 
   # This should handle pkg = "." I think?
   if (pkg != sbt(pak_res, direct)$ref[1]) pkg = sbt(pak_res, direct)$package[1]
