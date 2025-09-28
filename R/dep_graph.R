@@ -232,7 +232,7 @@ draw_pkg_graph = function(plot_df, evt, pkg, lwd,
 
   # par ---------------------------------------------------------------------
 
-  par(bg = "grey43",
+  par(bg = "grey53",
       mar = c(2,2,1.5,1),
       cex = 1.2,
       family = "Arial",
@@ -246,7 +246,7 @@ draw_pkg_graph = function(plot_df, evt, pkg, lwd,
         ts = V2 - .5 * cxy[2],
         te = V2 + .5 * cxy[2])
 
-  xr = c(fmin(plot_df$ws) - 3*pad_w, fmax(plot_df$we) + 3*pad_w)
+  xr = c(fmin(plot_df$ws) - 2.75*pad_w, fmax(plot_df$we) + 2.75*pad_w)
 
   yr = c(fmin(plot_df$ts) - 2*pad_h, fmax(plot_df$te) + 2*pad_h)
 
@@ -320,7 +320,7 @@ draw_pkg_graph = function(plot_df, evt, pkg, lwd,
         xe = V1 + w/2,
         ys = V2 - h/2,
         ye = V2 + h/2,
-        text_col = c("#F2F2F2", "grey15")[(col_pos > 50) + 1]) |>
+        text_col = c("#F2F2F2", "grey15")[(col_pos > 30) + 1]) |>
     roworder(n_deps) # top-level package will always be on top
 
   arrow_df = evt |>
