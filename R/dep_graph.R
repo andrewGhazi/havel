@@ -47,6 +47,7 @@ get_igraph_gr = function(pkg, edge_vec) {
 #' @param pad_w width padding
 #' @param arw factor by which to lengthen/shorten arrowheads
 #' @param log_col_scale if TRUE, set node colors to vary on a log scale with
+#' @param ... other arguments passed to par()
 #' @details If you include \code{"suggests"} among the dependency types to look
 #'   up, be aware that suggests can be circular / cyclic. If this is detected,
 #'   the node coloring will be turned off.
@@ -89,7 +90,8 @@ plot_deps_graph = function(pkg,
                            pad_h = .09,
                            pad_w = .07,
                            arw = 1,
-                           log_col_scale = FALSE) {
+                           log_col_scale = FALSE,
+                           ...) {
 
   if (gg) {
     rlang::check_installed(c("ggplot2", "ggraph", "igraph", "pals"))
@@ -150,7 +152,8 @@ plot_deps_graph = function(pkg,
                    lwd = lwd,
                    pad_h = pad_h,
                    pad_w = pad_w,
-                   cex = cex)
+                   cex = cex,
+                   ...)
 
   }
 }
@@ -226,17 +229,21 @@ gg_pkg_graph = function(pkg, gr, dep_type,
 draw_pkg_graph = function(plot_df, evt, pkg, lwd,
                           pad_h = pad_h,
                           pad_w = pad_w,
-                          cex = cex) {
+                          cex = cex,
+                          ...) {
 
   lght = "grey95"
 
   # par ---------------------------------------------------------------------
 
+  og = par()
+
   par(bg = "grey53",
       mar = c(2,2,1.5,1),
       cex = 1.2,
       family = "Arial",
-      adj = 0) # TODO handle this appropriately? i.e. store op <- par() and do par(op) at the end?
+      adj = 0,
+      ...) # TODO handle this appropriately? i.e. store op <- par() and do par(op) at the end?
 
   cxy = par("cxy")
 
@@ -371,6 +378,11 @@ draw_pkg_graph = function(plot_df, evt, pkg, lwd,
       labels = plot_df$pkg[i]
     )
   }
+
+  og[c("cin", "cra", "csi", "cxy", "din", "page")] = NULL
+  par(og)
+
+  invisible()
 }
 
 

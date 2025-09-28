@@ -16,7 +16,8 @@ plot_deps_graph(
   pad_h = 0.09,
   pad_w = 0.07,
   arw = 1,
-  log_col_scale = FALSE
+  log_col_scale = FALSE,
+  ...
 )
 }
 \arguments{
@@ -47,6 +48,8 @@ graphics.}
 \item{arw}{factor by which to lengthen/shorten arrowheads}
 
 \item{log_col_scale}{if TRUE, set node colors to vary on a log scale with}
+
+\item{...}{other arguments passed to par()}
 }
 \value{
 a ggplot

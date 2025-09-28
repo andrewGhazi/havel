@@ -69,7 +69,7 @@ avoid dependence on `Rcpp`.
 uniq_pkg_deps("ggplot2")
 #>            p1 n_uniq                                   uniq_pkgs
 #>        <char>  <num>                                      <list>
-#>  1:    scales      6 RColorBrewer,farver,viridisLite,R6,labeling
+#>  1:    scales      6 RColorBrewer,farver,labeling,R6,viridisLite
 #>  2:       cli      1                                            
 #>  3: grDevices      1                                            
 #>  4:      grid      1                                            
@@ -88,19 +88,20 @@ itself.
 
 Sometimes there’s no single package that introduces many unique
 dependencies, but there may be a *pair* or *triplet* that do. You can
-check the impact of removing `order = 2` packages like so:
+check the impact of removing each combination of `order = 2` packages
+like so:
 
 ``` r
 uniq_pkg_deps("ggplot2", order = 2) |> 
   head()
 #>           p1     p2 n_uniq                                            uniq_pkgs
 #>       <char> <char>  <num>                                               <list>
-#> 1:    scales  withr      8 RColorBrewer,farver,viridisLite,R6,graphics,labeling
-#> 2:       cli scales      7          RColorBrewer,farver,viridisLite,R6,labeling
-#> 3: grDevices scales      7          RColorBrewer,farver,viridisLite,R6,labeling
-#> 4:      grid scales      7          RColorBrewer,farver,viridisLite,R6,labeling
-#> 5:    gtable scales      7          RColorBrewer,farver,viridisLite,R6,labeling
-#> 6:   isoband scales      7          RColorBrewer,farver,viridisLite,R6,labeling
+#> 1:    scales  withr      8 RColorBrewer,farver,graphics,labeling,R6,viridisLite
+#> 2:       cli scales      7          RColorBrewer,farver,labeling,R6,viridisLite
+#> 3: grDevices scales      7          RColorBrewer,farver,labeling,R6,viridisLite
+#> 4:      grid scales      7          RColorBrewer,farver,labeling,R6,viridisLite
+#> 5:    gtable scales      7          RColorBrewer,farver,labeling,R6,viridisLite
+#> 6:   isoband scales      7          RColorBrewer,farver,labeling,R6,viridisLite
 ```
 
 `scales` + `withr` introduce eight.
@@ -158,5 +159,5 @@ burdens. (Plus, every permutation of “pkg”/“dep”/“graph” was taken.)
 - color edges by dependency type
 - ~~copy over ggplot version~~ ✓
 - highlight direct dependencies
-- uniq_pkg_deps() function
+- ~~uniq_pkg_deps() function~~ ✓
 - eliminate my precious pipes so I don’t require R \>= 4.1
