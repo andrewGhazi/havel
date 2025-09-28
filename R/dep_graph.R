@@ -246,7 +246,7 @@ draw_pkg_graph = function(plot_df, evt, pkg, lwd,
         ts = V2 - .5 * cxy[2],
         te = V2 + .5 * cxy[2])
 
-  xr = c(fmin(plot_df$ws) - 2*pad_w, fmax(plot_df$we) + 2*pad_w)
+  xr = c(fmin(plot_df$ws) - 3*pad_w, fmax(plot_df$we) + 3*pad_w)
 
   yr = c(fmin(plot_df$ts) - 2*pad_h, fmax(plot_df$te) + 2*pad_h)
 
