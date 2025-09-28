@@ -63,7 +63,47 @@ avoid dependence on `Rcpp`.
 
 ### `uniq_pkg_deps()`
 
-\< bit about `uniq_pkg_deps()` \>
+`uniq_pkg_deps()` tabulates what’s visually apparent on the plot:
+
+``` r
+uniq_pkg_deps("ggplot2")
+#>            p1 n_uniq                                   uniq_pkgs
+#>        <char>  <num>                                      <list>
+#>  1:    scales      6 RColorBrewer,farver,viridisLite,R6,labeling
+#>  2:       cli      1                                            
+#>  3: grDevices      1                                            
+#>  4:      grid      1                                            
+#>  5:    gtable      1                                            
+#>  6:   isoband      1                                            
+#>  7: lifecycle      1                                            
+#>  8:     rlang      1                                            
+#>  9:        S7      1                                            
+#> 10:     stats      1                                            
+#> 11:     vctrs      1                                            
+#> 12:     withr      1
+```
+
+`scales` introduces six unique dependencies to `ggplot2`, including
+itself.
+
+Sometimes there’s no single package that introduces many unique
+dependencies, but there may be a *pair* or *triplet* that do. You can
+check the impact of removing `order = 2` packages like so:
+
+``` r
+uniq_pkg_deps("ggplot2", order = 2) |> 
+  head()
+#>           p1     p2 n_uniq                                            uniq_pkgs
+#>       <char> <char>  <num>                                               <list>
+#> 1:    scales  withr      8 RColorBrewer,farver,viridisLite,R6,graphics,labeling
+#> 2:       cli scales      7          RColorBrewer,farver,viridisLite,R6,labeling
+#> 3: grDevices scales      7          RColorBrewer,farver,viridisLite,R6,labeling
+#> 4:      grid scales      7          RColorBrewer,farver,viridisLite,R6,labeling
+#> 5:    gtable scales      7          RColorBrewer,farver,viridisLite,R6,labeling
+#> 6:   isoband scales      7          RColorBrewer,farver,viridisLite,R6,labeling
+```
+
+`scales` + `withr` introduce eight.
 
 ## Related/prior work
 

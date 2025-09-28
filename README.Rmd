@@ -66,7 +66,22 @@ Well, looks like that would be difficult. Even if I removed the direct dependenc
 
 ### `uniq_pkg_deps()`
 
-< bit about `uniq_pkg_deps()` >
+`uniq_pkg_deps()` tabulates what's visually apparent on the plot: 
+
+```{r}
+uniq_pkg_deps("ggplot2")
+```
+
+`scales` introduces six unique dependencies to `ggplot2`, including itself.
+
+Sometimes there's no single package that introduces many unique dependencies, but there may be a *pair* or *triplet* that do. You can check the impact of removing `order = 2` packages like so:
+
+```{r}
+uniq_pkg_deps("ggplot2", order = 2) |> 
+  head()
+```
+
+`scales` + `withr` introduce eight.
 
 ## Related/prior work
 
