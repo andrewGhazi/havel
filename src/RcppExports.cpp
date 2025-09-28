@@ -55,6 +55,34 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// cc
+CharacterVector cc(CharacterVector a, CharacterVector b);
+RcppExport SEXP _havel_cc(SEXP aSEXP, SEXP bSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< CharacterVector >::type a(aSEXP);
+    Rcpp::traits::input_parameter< CharacterVector >::type b(bSEXP);
+    rcpp_result_gen = Rcpp::wrap(cc(a, b));
+    return rcpp_result_gen;
+END_RCPP
+}
+// get_n_ds_uniq
+List get_n_ds_uniq(int n_group, int order, CharacterVector dir_deps, IntegerVector group, CharacterVector pkg, List ds_deps);
+RcppExport SEXP _havel_get_n_ds_uniq(SEXP n_groupSEXP, SEXP orderSEXP, SEXP dir_depsSEXP, SEXP groupSEXP, SEXP pkgSEXP, SEXP ds_depsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type n_group(n_groupSEXP);
+    Rcpp::traits::input_parameter< int >::type order(orderSEXP);
+    Rcpp::traits::input_parameter< CharacterVector >::type dir_deps(dir_depsSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type group(groupSEXP);
+    Rcpp::traits::input_parameter< CharacterVector >::type pkg(pkgSEXP);
+    Rcpp::traits::input_parameter< List >::type ds_deps(ds_depsSEXP);
+    rcpp_result_gen = Rcpp::wrap(get_n_ds_uniq(n_group, order, dir_deps, group, pkg, ds_deps));
+    return rcpp_result_gen;
+END_RCPP
+}
 // stress
 double stress(NumericMatrix x, NumericMatrix D);
 RcppExport SEXP _havel_stress(SEXP xSEXP, SEXP DSEXP) {
@@ -86,6 +114,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_havel_get_deps_memo", (DL_FUNC) &_havel_get_deps_memo, 3},
     {"_havel_get_region", (DL_FUNC) &_havel_get_region, 4},
     {"_havel_get_axy", (DL_FUNC) &_havel_get_axy, 8},
+    {"_havel_cc", (DL_FUNC) &_havel_cc, 2},
+    {"_havel_get_n_ds_uniq", (DL_FUNC) &_havel_get_n_ds_uniq, 6},
     {"_havel_stress", (DL_FUNC) &_havel_stress, 2},
     {"_havel_stress_layout", (DL_FUNC) &_havel_stress_layout, 4},
     {NULL, NULL, 0}

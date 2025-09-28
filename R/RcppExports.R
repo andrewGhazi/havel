@@ -13,6 +13,14 @@ get_axy <- function(reg, xs, xe, ys, ye, th, p2x, p2y) {
     .Call(`_havel_get_axy`, reg, xs, xe, ys, ye, th, p2x, p2y)
 }
 
+cc <- function(a, b) {
+    .Call(`_havel_cc`, a, b)
+}
+
+get_n_ds_uniq <- function(n_group, order, dir_deps, group, pkg, ds_deps) {
+    .Call(`_havel_get_n_ds_uniq`, n_group, order, dir_deps, group, pkg, ds_deps)
+}
+
 stress <- function(x, D) {
     .Call(`_havel_stress`, x, D)
 }

@@ -14,6 +14,7 @@ Imports:
     cli,
     collapse,
     cppRouting,
+    data.table,
     graphics,
     grid,
     pak,

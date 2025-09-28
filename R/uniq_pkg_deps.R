@@ -23,6 +23,7 @@
 #' # pkgcache isn't allowed in examples, uncomment and run interactively:
 #' # uniq_pkg_deps("ggplot2")
 #' # ^ scales adds the most unique dependencies to ggplot2 -- 6 including itself.
+#' @export
 uniq_pkg_deps = function(pkg,
                          dep_type = c("depends", "imports", "linkingto"),
                          pak_res = NULL,
@@ -56,58 +57,75 @@ uniq_pkg_deps = function(pkg,
     mtt(group = 1:choose(length(dir_deps), order)) |>
     pivot(ids = "group", names = list("p_i", "pkg")) |>
     join(ns_df, on = "pkg", verbose = FALSE) |>
-    roworder(group) |>
+    roworder(group) |> # get_n_ds_uniq.cpp requires this ordering, don't drop it.
     qDT()
 
   # TODO: loop through groups
 
+  ds_by_grp = combn_df |>
+    slt(-p_i) |>
+    data.table::as.data.table()
+
+  tall_ds_by_grp = ds_by_grp[,.(pg = paste0(pkg, collapse=";"),
+                                pl = funique(unlist(ds_deps))),
+                             by = group]
+  # ^ fast data.table unnesting
+
+  # tall_ds_by_grp$pl[whichNA(tall_ds_by_grp$pl)] = NULL
+
+  # setkey(tall_ds_by_grp, group) # sbt usually faster
+
+  grp_memb_df = ds_by_grp |>
+    slt(group, pkg) |>
+    funique()
+
   # There's probably some fancy database-like operation for this, but we'll just
   # settle for the naive way: loop over groups. For each group, find any
   # dependencies unique to that group that are not found in the other groups.
-  n_group = max(combn_df$group)
+  # You have to exclude other groups that include any of group i's packages.
 
-  empty_list = replicate(n_group, character(), simplify = FALSE)
+  i_uniq = lapply(seq_len(max(combn_df$group)),
+                  get_uniq_i,
+                  tall_ds_by_grp,
+                  grp_memb_df,
+                  dir_deps)
 
-  res_df = data.frame(group = seq_len(n_group)) |>
-    mtt(group_pkgs = empty_list,
-        n_uniq = 0,
-        uniq_deps = empty_list)
-
-  for (i in res_df$group) {
-    # TODO: progress bar? This could be slow for high order number.
-    # TODO: redo in C++
-
-    i_df  = combn_df |> sbt(group %==% i)
-
-    i_pkgs = i_df$pkg
-
-    ni_df = combn_df |>
-      gby(group) |>
-      mtt(any_i = any(pkg %in% i_pkgs)) |>
-      fungroup() |>
-      sbt(!any_i)
-
-    i_ds  =  i_df$ds_deps |> unlist() |> funique()
-    i_ds = i_ds[i_ds %!iin% dir_deps]
-
-    ni_ds = ni_df$ds_deps |> unlist() |> funique()
-
-    res_i = i_ds[i_ds %!iin% ni_ds]
-
-    res_df$group_pkgs[[i]] = i_df$pkg
-    res_df$uniq_deps[[i]] = res_i
-    res_df$n_uniq[i] = length(res_i) + order
-  }
-
-  res_df = res_df |>
+  combn_df |>
+    slt(group, p_i, pkg) |>
+    pivot(how = "wider", names = "p_i", values = "pkg") |>
+    roworder(group) |>
+    mtt(n_uniq = lengths(i_uniq) + order,
+        uniq_pkgs = i_uniq) |>
     roworder(-n_uniq) |>
     slt(-group)
 
-  id_df = res_df$group_pkgs |>
-    unlist2d(idcols = FALSE) |>
-    frename(\(x) gsub("V", "pkg", x))
+}
 
-  add_vars(id_df, res_df |> slt(-group_pkgs))
+get_uniq_i = function(i,
+                      tall_ds_by_grp,
+                      grp_memb_df,
+                      dir_deps) {
 
+  i_df = tall_ds_by_grp |> sbt(group %==% i)
+
+  i_pkgs = grp_memb_df |>
+    sbt(group %==% i) |>
+    get_elem("pkg")
+
+  any_i_df = grp_memb_df |>
+    gby(group) |>
+    mtt(any_i = any(pkg %in% i_pkgs)) |>
+    fungroup() |>
+    sbt(!any_i)
+
+  anti_i = any_i_df$group |> funique()
+
+  ni_df = tall_ds_by_grp |> sbt(group %iin% anti_i)
+
+  ni_and_dir = funique(c(ni_df$pl, dir_deps))
+
+  i_ds = na_rm(i_df$pl)
+
+  i_ds[i_ds %!iin% ni_and_dir]
 
 }

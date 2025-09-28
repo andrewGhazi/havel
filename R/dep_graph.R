@@ -69,7 +69,8 @@ get_igraph_gr = function(pkg, edge_vec) {
 #'   layout happens to overlap the legend or something.
 #'
 #' @returns a ggplot
-#' @import collapse
+#' @rawNamespace import(collapse, except = c(fdroplevels))
+#' @rawNamespace import(data.table, except = c(first, last, between, transpose))
 #' @importFrom stats rnorm cmdscale
 #' @examples
 #' # Using pkgcache in examples is not allowed, uncomment to run these interactively:
