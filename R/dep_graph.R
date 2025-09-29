@@ -62,12 +62,12 @@ get_igraph_gr = function(pkg, edge_vec) {
 #'   version. Either set \code{gg=TRUE} or set your desired graphics device
 #'   size, then re-run your command.
 #'
-#'   The layout in the base graphics version is stochastic - if it looks weird
-#'   just run it again.
+#'   The layout in the base graphics version is initialized with a bit of random
+#'   jitter. If you want to tweak it change the random seed and try again.
 #'
-#'   Random layout initialization only applies to base graphics, and typically
-#'   looks worse than MDS initialization. Generally only useful if the MDS
-#'   layout happens to overlap the legend or something.
+#'   Random layout initialization only applies to base graphics when used, and
+#'   typically looks worse than MDS initialization. Generally only useful if the
+#'   MDS layout happens to overlap the legend or something.
 #'
 #' @returns a ggplot
 #' @rawNamespace import(collapse, except = c(fdroplevels))
@@ -327,7 +327,7 @@ draw_pkg_graph = function(plot_df, evt, pkg, lwd,
         xe = V1 + w/2,
         ys = V2 - h/2,
         ye = V2 + h/2,
-        text_col = c("#F2F2F2", "grey15")[(col_pos > 30) + 1]) |>
+        text_col = c("#F2F2F2", "grey15")[(col_pos > 35) + 1]) |>
     roworder(n_deps) # top-level package will always be on top
 
   arrow_df = evt |>

@@ -73,12 +73,12 @@ If you include \code{"suggests"} among the dependency types to look
   version. Either set \code{gg=TRUE} or set your desired graphics device
   size, then re-run your command.
 
-  The layout in the base graphics version is stochastic - if it looks weird
-  just run it again.
+  The layout in the base graphics version is initialized with a bit of random
+  jitter. If you want to tweak it change the random seed and try again.
 
-  Random layout initialization only applies to base graphics, and typically
-  looks worse than MDS initialization. Generally only useful if the MDS
-  layout happens to overlap the legend or something.
+  Random layout initialization only applies to base graphics when used, and
+  typically looks worse than MDS initialization. Generally only useful if the
+  MDS layout happens to overlap the legend or something.
 }
 \examples{
 # Using pkgcache in examples is not allowed, uncomment to run these interactively:
