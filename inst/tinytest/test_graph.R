@@ -20,3 +20,5 @@ test_graph = function() {
 
 
 }
+
+test_graph()
