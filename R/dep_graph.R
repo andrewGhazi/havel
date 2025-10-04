@@ -39,10 +39,11 @@ get_igraph_gr = function(pkg, edge_vec) {
 #' @param pak_res a pre-computed result from
 #'   \code{\link[pak:pkg_deps]{pak::pkg_deps}}
 #' @param gg If true, use ggplot2 + ggraph to draw the plot instead of base
-#'   graphics.
+#'   graphics. Other graphical arguments below will be ignored.
 #' @param lwd line width
 #' @param cex text size multiplication factor (see
 #'   \code{\link[graphics:par]{graphics::par}})
+#' @param font_family family argument given to \code{par()}
 #' @param pad_h height padding
 #' @param pad_w width padding
 #' @param arw factor by which to lengthen/shorten arrowheads
@@ -89,6 +90,7 @@ plot_deps_graph = function(pkg,
                            cex = 1,
                            pad_h = .09,
                            pad_w = .07,
+                           font_family = "Arial",
                            arw = 1,
                            log_col_scale = FALSE,
                            ...) {
@@ -138,8 +140,6 @@ plot_deps_graph = function(pkg,
 
     layout_mat = get_gr_layout(df, nds, init)
 
-    # layout_mat = stress_layout(x_init, D, n_iter, 1e-3) # TODO make configurable
-
     plot_df = layout_mat |>
       qDT() |>
       mtt(pkg = nds) |>
@@ -153,6 +153,7 @@ plot_deps_graph = function(pkg,
                    pad_h = pad_h,
                    pad_w = pad_w,
                    cex = cex,
+                   font_family = font_family,
                    ...)
 
   }
@@ -220,16 +221,13 @@ gg_pkg_graph = function(pkg, gr, dep_type,
 
 }
 
-# get_region = function(th, p2_th, pm_th, pmp2_th) {
-#
-# }
-
 #' @importFrom grDevices rgb
 #' @importFrom graphics arrows par rect text title
 draw_pkg_graph = function(plot_df, evt, pkg, lwd,
-                          pad_h = pad_h,
-                          pad_w = pad_w,
-                          cex = cex,
+                          pad_h,
+                          pad_w,
+                          cex,
+                          font_family,
                           ...) {
 
   lght = "grey95"
@@ -241,7 +239,7 @@ draw_pkg_graph = function(plot_df, evt, pkg, lwd,
   par(bg = "grey53",
       mar = c(2,2,1.5,1),
       cex = 1.2,
-      family = "Arial",
+      family = font_family,
       adj = 0,
       ...) # TODO handle this appropriately? i.e. store op <- par() and do par(op) at the end?
 

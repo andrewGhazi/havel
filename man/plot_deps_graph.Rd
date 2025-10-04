@@ -15,6 +15,7 @@ plot_deps_graph(
   cex = 1,
   pad_h = 0.09,
   pad_w = 0.07,
+  font_family = "Arial",
   arw = 1,
   log_col_scale = FALSE,
   ...
@@ -34,7 +35,7 @@ plot_deps_graph(
 \item{init}{how to initialize layout, MDS (default) or randomly}
 
 \item{gg}{If true, use ggplot2 + ggraph to draw the plot instead of base
-graphics.}
+graphics. Other graphical arguments below will be ignored.}
 
 \item{lwd}{line width}
 
@@ -44,6 +45,8 @@ graphics.}
 \item{pad_h}{height padding}
 
 \item{pad_w}{width padding}
+
+\item{font_family}{family argument given to \code{par()}}
 
 \item{arw}{factor by which to lengthen/shorten arrowheads}
 
