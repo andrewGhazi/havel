@@ -74,7 +74,7 @@ uniq_pkg_deps("ggplot2")
 
 `scales` introduces six unique dependencies to `ggplot2`, including itself.
 
-Sometimes there's no single package that introduces many unique dependencies, but there may be a *pair* or *triplet* that do. You can check the impact of removing each combination of `order = 2` packages like so:
+Sometimes there's no single package that introduces many unique dependencies, but there may be a *pair* or *triplet* that does. You can check the impact of removing each combination of `order = 2` packages like so:
 
 ```{r}
 uniq_pkg_deps("ggplot2", order = 2) |> 
