@@ -3,7 +3,7 @@ Type: Package
 Title: Visualizing R package dependencies 
 Version: 1.0
 Date: 2025-07-20
-Authors@R: person("Andrew", "Ghazi", role = c("aut", "cre"), email = "your@email.com")
+Authors@R: person("Andrew", "Ghazi", role = c("aut", "cre"), email = "andrew_ghazi@hms.harvard.edu")
 Description: Plot recursive dependency graphs and tabulate the number of unique dependencies added by "top-level" dependencies.
 License: GPL (>= 3) | file LICENSE
 Encoding: UTF-8
