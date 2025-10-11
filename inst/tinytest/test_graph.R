@@ -10,7 +10,8 @@ test_graph = function() {
 
   dt_res = havel:::get_pkg_graph("data.table",
                                  dep_type = c("depends", "imports", "linkingto"),
-                                 pak_res = NULL)
+                                 pak_res = NULL,
+                                 info_method = "pak")
 
   dt_edges = dt_res[[2]]
 

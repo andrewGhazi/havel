@@ -8,7 +8,8 @@ test_small_plot = function() {
 
 test_empty_plot = function() {
   # plot with 0 edges like utils
-  expect_silent(havel::plot_deps_graph('utils', font_family = "sans"))
+  # This one will warn because pak::pkg_deps fails for utils
+  expect_message(havel::plot_deps_graph('utils', font_family = "sans"))
 
 }
 
