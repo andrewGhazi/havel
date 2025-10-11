@@ -14,6 +14,12 @@ uniq_pkg_deps(
 \arguments{
 \item{pkg}{a package to check}
 
+\item{dep_type}{type(s) of dependencies to look up. Valid values are
+\code{c("depends", "imports", "linkingto", "suggests")}}
+
+\item{pak_res}{a pre-computed result from
+\code{\link[pak:pkg_deps]{pak::pkg_deps}}}
+
 \item{order}{Consider combinations of this many packages. Be careful going
 beyond 3.}
 }

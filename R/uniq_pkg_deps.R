@@ -19,6 +19,7 @@
 #' @returns A data.table listing the packages and the number of unique
 #'   dependencies.
 #' @seealso [plot_deps_graph()]
+#' @inheritParams plot_deps_graph
 #' @examples
 #' # pkgcache isn't allowed in examples, uncomment and run interactively:
 #' # uniq_pkg_deps("ggplot2")
