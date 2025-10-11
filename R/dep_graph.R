@@ -162,7 +162,6 @@ plot_deps_graph = function(pkg,
 gg_pkg_graph = function(pkg, gr, dep_type,
                         lwd, pad_h, pad_w, cex) {
 
-  # TODO call this fn, pass in args
   # TODO add adaptive label color to this version
   # TODO stretch goal: widen x range to allow for long pkg names on edges
 
@@ -381,44 +380,5 @@ draw_pkg_graph = function(plot_df, evt, pkg, lwd,
   par(og)
 
   invisible()
-}
-
-
-get_pkg_graph = function(pkg, dep_type, pak_res) {
-
-  dep_type = c("depends", "imports", "linkingto")
-
-  pak_res = pak_res %||% pak::pkg_deps(pkg)
-  # ^ TODO: try to fall back to tools::package_dependencies() if this fails
-
-  # This should handle pkg = "." I think?
-  if (pkg != sbt(pak_res, direct)$ref[1]) pkg = sbt(pak_res, direct)$package[1]
-
-  # V This prints an empty message...
-  nested_pkg_list = pak_res |>
-    slt(package, deps) |>
-    frename(from = package)
-
-  names(nested_pkg_list$deps) = nested_pkg_list$from
-
-  unnested = rowbind(nested_pkg_list$deps,
-                     idcol = "from") |>
-    frename(to = "package") |>
-    qDT() |>
-    mtt(from = as.character(from))
-
-  edge_list = unnested |>
-    sbt(tolower(type) %in% dep_type) |>
-    slt(from:to) |>
-    funique() |>
-    sbt(to != "R")
-
-  edge_vec = mapply(\(x,y) c(x,y),
-                    edge_list$from, edge_list$to) |>
-    unlist()
-
-  # TODO handle empty graphs
-
-  return(list(pak_res, edge_vec))
 }
 
