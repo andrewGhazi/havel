@@ -44,6 +44,9 @@ get_igraph_gr = function(pkg, edge_vec) {
 #' @param n_iter number of iterations for stress graph layout computation
 #' @param pak_res a pre-computed result from
 #'   \code{\link[pak:pkg_deps]{pak::pkg_deps}}
+#' @param info_method either "pak" or "tools". The latter will use
+#'   \code{\link[tools:package_dependencies]{tools::package_dependencies}} to
+#'   look up package info.
 #' @param gg If true, use ggplot2 + ggraph to draw the plot instead of base
 #'   graphics. Other graphical arguments below will be ignored.
 #' @param lwd line width
@@ -60,7 +63,7 @@ get_igraph_gr = function(pkg, edge_vec) {
 #'   the node coloring will be turned off.
 #'
 #'   Pre-computing the dependency lookup with
-#'   \code{\link[pak:pkg_deps]{pak::pkg_dep}} and passing it to the
+#'   \code{\link[pak:pkg_deps]{pak::pkg_deps}} and passing it to the
 #'   \code{pak_res} argument can be handy when fiddling with graphical
 #'   parameters. Also handy to avoid hitting the bundled GitHub PAT limits used
 #'   by pak::pkg_deps().
@@ -89,6 +92,7 @@ get_igraph_gr = function(pkg, edge_vec) {
 plot_deps_graph = function(pkg,
                            dep_type = c("depends", "imports", "linkingto"),
                            pak_res = NULL,
+                           info_method = "pak",
                            n_iter = 100,
                            init = "mds",
                            gg = FALSE,
@@ -117,7 +121,10 @@ plot_deps_graph = function(pkg,
                    values = c("depends", "imports", "suggests", "linkingto"),
                    multiple = TRUE)
 
-  prgc = get_pkg_graph(pkg, dep_type, pak_res)
+  rlang::arg_match(info_method,
+                   values = c("pak", "tools"))
+
+  prgc = get_pkg_graph(pkg, dep_type, pak_res, info_method)
 
   pak_res = prgc[[1]]
 
@@ -336,7 +343,7 @@ draw_pkg_graph = function(plot_df, evt, pkg, lwd,
            arrow_i$ay,
            lwd = lwd,
            col = "grey14",
-           length = .5*plot_df$h[1],
+           length = .375*plot_df$h[1],
            angle = 20)
 
     #TODO: make border optionally red if it's a direct dependency of the top-level one.
