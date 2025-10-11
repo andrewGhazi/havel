@@ -120,3 +120,4 @@ Havel's Ring is an item in Dark Souls that helps you deal with excessive burdens
 * highlight direct dependencies
 * ~~uniq_pkg_deps() function~~ ✓
 * eliminate my precious pipes so I don't require R >= 4.1 
+* Fix missing arrows between base packages (e.g. currently there are arrows missing from `methods` → `utils`,`stats`)
