@@ -1,5 +1,5 @@
 
-get_dep_of_type = function(pkg, type, db) {
+get_dep_of_type = function(pkg, type, db, base_db) {
 
   # Oops I enforced lowercase too early :)
   type_map = c("depends" = "Depends",
@@ -7,9 +7,17 @@ get_dep_of_type = function(pkg, type, db) {
                "linkingto" = "LinkingTo",
                "suggests" = "Suggests")
 
-  dep_vec = tools::package_dependencies(pkg,
-                                        db = db,
-                                        which = type_map[type])[[1]]
+  if (pkg %in% rownames(base_db)) {
+
+    dep_vec = tools::package_dependencies(pkg,
+                                          db = base_db,
+                                          which = type_map[type])[[1]]
+
+  } else {
+    dep_vec = tools::package_dependencies(pkg,
+                                          db = db,
+                                          which = type_map[type])[[1]]
+  }
 
   data.table(ref = pkg,
              type = type,
@@ -17,12 +25,13 @@ get_dep_of_type = function(pkg, type, db) {
 
 }
 
-get_info_row = function(pkg, dep_type, db) {
+get_info_row = function(pkg, dep_type, db, base_db) {
 
   dir_deps = lapply(dep_type,
                     get_dep_of_type,
                     pkg = pkg,
-                    db = db)
+                    db = db,
+                    base_db = base_db)
 
   names(dir_deps) = dep_type
 
@@ -30,7 +39,7 @@ get_info_row = function(pkg, dep_type, db) {
 }
 
 #' @importFrom tools package_dependencies
-#' @importFrom utils available.packages
+#' @importFrom utils available.packages installed.packages
 get_info_tools = function(pkg, dep_type) {
   # Return a data frame of info (columns: ref, direct, package, deps)
   # deps should be a list column of dfs with columns: ref, type, package
@@ -39,11 +48,11 @@ get_info_tools = function(pkg, dep_type) {
 
   db = utils::available.packages() # Want to avoid doing this many times
 
-  top_df = get_info_row(pkg, dep_type, db)
+  base_db = utils::installed.packages(priority = "base")
 
-  dont_get = installed.packages(priority = "base")[,"Package"] # base packages that p_d can't get for some reason?
+  top_df = get_info_row(pkg, dep_type, db, base_db)
 
-  to_get = top_df$package[!(top_df$package %in% dont_get)]
+  to_get = top_df$package
 
   res = data.table(ref = pkg,
                    direct = TRUE,
@@ -57,7 +66,7 @@ get_info_tools = function(pkg, dep_type) {
 
     checked = funique(c(checked, cur))
 
-    pkg_i = get_info_row(cur, dep_type, db)
+    pkg_i = get_info_row(cur, dep_type, db, base_db)
 
     pkg_i_row = data.table(ref = cur,
                            direct = FALSE,
@@ -66,7 +75,7 @@ get_info_tools = function(pkg, dep_type) {
 
     res = rowbind(res, pkg_i_row) # Growing here might be slow, TODO: Cpp version?
 
-    to_add = pkg_i$package[!(pkg_i$package %in% c(checked, dont_get))]
+    to_add = pkg_i$package[!(pkg_i$package %in% checked)]
 
     to_get = to_get[-1]
 
@@ -87,7 +96,7 @@ get_pkg_info = function(pkg, dep_type) {
   if (is(pr, "try-error")) {
     # can't use tryCatch() because the argument to error function doesn't provide the package name
 
-    cli::cli_alert_info("{.fn pak::pkg_deps} failed to obtain package dependency information, falling back to {.fn tools::package_depencies}")
+    cli::cli_alert_info("{.fn pak::pkg_deps} failed to obtain package dependency information, falling back to {.fn tools::package_dependencies}")
     pr = try(get_info_tools(pkg, dep_type),
              silent = TRUE)
     # TODO: ^ find out why this DOESN'T return NULL like it should for pkg = "gsdfgsdfgas"
@@ -104,7 +113,7 @@ get_pkg_graph = function(pkg, dep_type, pak_res) {
 
   # dep_type = c("depends", "imports", "linkingto")
 
-  pak_res = pak_res %||% get_pkg_info(pkg)
+  pak_res = pak_res %||% get_pkg_info(pkg, dep_type)
 
   # This should handle pkg = "." I think?
   if (pkg != sbt(pak_res, direct)$ref[1]) pkg = sbt(pak_res, direct)$package[1]
@@ -135,8 +144,6 @@ get_pkg_graph = function(pkg, dep_type, pak_res) {
   edge_vec = mapply(\(x,y) c(x,y),
                     edge_list$from, edge_list$to) |>
     unlist()
-
-  # TODO handle empty graphs
 
   return(list(pak_res, edge_vec))
 }
