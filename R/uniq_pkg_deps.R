@@ -24,6 +24,7 @@
 #' # pkgcache isn't allowed in examples, uncomment and run interactively:
 #' # uniq_pkg_deps("ggplot2")
 #' # ^ scales adds the most unique dependencies to ggplot2 -- 6 including itself.
+#' @importFrom utils combn
 #' @export
 uniq_pkg_deps = function(pkg,
                          dep_type = c("depends", "imports", "linkingto"),

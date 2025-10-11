@@ -88,6 +88,7 @@ get_info_tools = function(pkg, dep_type) {
   res
 }
 
+#' @importFrom methods is
 get_pkg_info = function(pkg, dep_type, info_method) {
 
   if (info_method == "tools") {
