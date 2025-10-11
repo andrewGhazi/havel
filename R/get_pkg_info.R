@@ -88,32 +88,37 @@ get_info_tools = function(pkg, dep_type) {
   res
 }
 
-get_pkg_info = function(pkg, dep_type) {
+get_pkg_info = function(pkg, dep_type, info_method) {
 
-  pr = try(pak::pkg_deps(pkg),
-           silent = TRUE)
-
-  if (is(pr, "try-error")) {
-    # can't use tryCatch() because the argument to error function doesn't provide the package name
-
-    cli::cli_alert_info("{.fn pak::pkg_deps} failed to obtain package dependency information, falling back to {.fn tools::package_dependencies}")
+  if (info_method == "tools") {
     pr = try(get_info_tools(pkg, dep_type),
              silent = TRUE)
-    # TODO: ^ find out why this DOESN'T return NULL like it should for pkg = "gsdfgsdfgas"
+  } else {
+    pr = try(pak::pkg_deps(pkg),
+             silent = TRUE)
+
+    if (is(pr, "try-error")) {
+      # can't use tryCatch() because the argument to error function doesn't provide the package name
+
+      cli::cli_alert_info("{.fn pak::pkg_deps} failed to obtain package dependency information, falling back to {.fn tools::package_dependencies}")
+      pr = try(get_info_tools(pkg, dep_type),
+               silent = TRUE)
+      # TODO: ^ find out why this DOESN'T return NULL like it should for pkg = "gsdfgsdfgas"
+    }
   }
 
-  if (is.null(pr[[1]])) {
+  if (is(pr, "try-error") | is.null(pr[[1]])) {
     cli::cli_abort("Failed to get package information with both {.fn pak::pkg_deps} and {.fn tools::package_dependencies}")
   }
 
   pr
 }
 
-get_pkg_graph = function(pkg, dep_type, pak_res) {
+get_pkg_graph = function(pkg, dep_type, pak_res, info_method) {
 
   # dep_type = c("depends", "imports", "linkingto")
 
-  pak_res = pak_res %||% get_pkg_info(pkg, dep_type)
+  pak_res = pak_res %||% get_pkg_info(pkg, dep_type, info_method)
 
   # This should handle pkg = "." I think?
   if (pkg != sbt(pak_res, direct)$ref[1]) pkg = sbt(pak_res, direct)$package[1]
