@@ -125,17 +125,26 @@ plot_deps_graph = function(pkg,
 
   pkg = clean_pkg_nm(pkg, pak_res)
 
-  evt = t(edge_vec)
+  if (!rlang::is_empty(edge_vec)) {
+    evt = t(edge_vec)
 
-  ns_df = get_deps_memo(evt[, 1], evt[, 2], pkg)
+    ns_df = get_deps_memo(evt[, 1], evt[, 2], pkg)
 
-  df = data.frame(from = edge_vec[1,],
-                  to = edge_vec[2,],
-                  cost = 1)
+    df = data.frame(from = edge_vec[1,],
+                    to = edge_vec[2,],
+                    cost = 1)
 
-  nds = funique(c(df$from, df$to))
+    nds = funique(c(df$from, df$to))
 
-  n = length(nds)
+    n = length(nds)
+  } else {
+    df = NULL
+    nds = pkg
+    n = 1
+    ns_df = list(pkg = pkg,
+                 ds_deps = list(NULL))
+    evt = NULL
+  }
 
   if (gg) {
     gr = get_igraph_gr(pkg, edge_vec)
@@ -276,13 +285,84 @@ draw_pkg_graph = function(plot_df, evt, pkg, lwd,
     ylab = ""
   )
 
-  # legend ------------------------------------------------------------------
 
-  # TODO: draw the legend at the end so it's on top?
+  # title -------------------------------------------------------------------
+
+  par(adj = 0)
+
+  title(pkg, col.main = lght)
+
+  par(adj = .5)
+
+  # rects/labels/arrows data ------------------------------------------------
+
+  plot_df = plot_df |>
+    mtt(w = graphics::strwidth(pkg, cex = cex) + pad_w,
+        h = graphics::strheight("T", cex = cex) + pad_h,
+        xs = V1 - w/2,
+        xe = V1 + w/2,
+        ys = V2 - h/2,
+        ye = V2 + h/2,
+        text_col = c("#F2F2F2", "grey15")[(col_pos > 35) + 1]) |>
+    roworder(n_deps) # top-level package will always be on top
+
+  if (!is.null(evt)) {
+    arrow_df = evt |>
+      qDT() |>
+      setColnames(c("p1", "p2")) |>
+      join(plot_df |> slt(p1 = pkg, p1x = V1, p1y = V2), verbose = FALSE) |>
+      join(plot_df |> slt(p2 = pkg, p2x = V1, p2y = V2, xs:ye), verbose = FALSE) |>
+      mtt(th = atan2(p2y - p1y, p2x - p1x), #theta
+          p2_th = atan2(p2y-ys, p2x-xs), # angle from the corner to the center of the box at pkg 2
+          p2_high = as.integer(p2y > p1y),
+          reg = get_region(abs(th), p2_th, p2_high, pi))  |>
+      mtt(get_axy(reg, xs, xe, ys, ye, th, p2x, p2y)) # needs to return an n x 2 df with columns ax and ay
+  } else {
+    arrow_df = data.table(p1 = "", p1x = 0, p1y = 0, ax = 0, ay = 0)
+  }
+  # loop through dependencies -----------------------------------------------
+
+  # You have to loop because labels won't overlap their respective rectangles
+  # properly if you do all one then the other. Also it makes arrows cross
+  # over/under in the most pleasing way.
+
+  for (i in 1:nrow(plot_df)) {
+
+    arrow_i = arrow_df |> sbt(whichv(p1, plot_df$pkg[i]))
+
+    arrows(arrow_i$p1x,
+           arrow_i$p1y,
+           arrow_i$ax,
+           arrow_i$ay,
+           lwd = lwd,
+           col = "grey14",
+           length = .5*plot_df$h[1],
+           angle = 20)
+
+    #TODO: make border optionally red if it's a direct dependency of the top-level one.
+    rect(
+      col = plot_df$pkg_col[i],
+      xleft = plot_df$xs[i],
+      xright = plot_df$xe[i],
+      ybottom = plot_df$ys[i],
+      ytop = plot_df$ye[i],
+      border = rgb(0,0,0,0)
+    )
+
+    text(
+      x = plot_df$V1[i],
+      y = plot_df$V2[i],
+      cex = cex,
+      col = plot_df$text_col[i],
+      labels = plot_df$pkg[i]
+    )
+  }
+
+  # legend ------------------------------------------------------------------
 
   li = floor(seq(1,100, length.out = 30))
 
-  labs = seq(1, max(plot_df$n_deps), length.out = 4) |>
+  labs = seq(min(1, min(plot_df$n_deps)), max(plot_df$n_deps), length.out = 4) |>
     floor() |>
     as.character()
 
@@ -313,76 +393,8 @@ draw_pkg_graph = function(plot_df, evt, pkg, lwd,
        col = lght,
        cex = .5)
 
-  # title -------------------------------------------------------------------
-
-  par(adj = 0)
-
-  title(pkg, col.main = lght)
-
-  par(adj = .5)
-
-  # rects/labels/arrows data ------------------------------------------------
-
-  plot_df = plot_df |>
-    mtt(w = graphics::strwidth(pkg, cex = cex) + pad_w,
-        h = graphics::strheight("T", cex = cex) + pad_h,
-        xs = V1 - w/2,
-        xe = V1 + w/2,
-        ys = V2 - h/2,
-        ye = V2 + h/2,
-        text_col = c("#F2F2F2", "grey15")[(col_pos > 35) + 1]) |>
-    roworder(n_deps) # top-level package will always be on top
-
-  arrow_df = evt |>
-    qDT() |>
-    setColnames(c("p1", "p2")) |>
-    join(plot_df |> slt(p1 = pkg, p1x = V1, p1y = V2), verbose = FALSE) |>
-    join(plot_df |> slt(p2 = pkg, p2x = V1, p2y = V2, xs:ye), verbose = FALSE) |>
-    mtt(th = atan2(p2y - p1y, p2x - p1x), #theta
-        p2_th = atan2(p2y-ys, p2x-xs), # angle from the corner to the center of the box at pkg 2
-        p2_high = as.integer(p2y > p1y),
-        reg = get_region(abs(th), p2_th, p2_high, pi))  |>
-    mtt(get_axy(reg, xs, xe, ys, ye, th, p2x, p2y)) # needs to return an n x 2 df with columns ax and ay
-
-  # loop through dependencies -----------------------------------------------
-
-  # You have to loop because labels won't overlap their respective rectangles
-  # properly if you do all one then the other. Also it makes arrows cross
-  # over/under in the most pleasing way.
-
-  for (i in 1:nrow(plot_df)) {
-
-    arrow_i = arrow_df |> sbt(whichv(p1, plot_df$pkg[i]))
-
-    arrows(arrow_i$p1x,
-           arrow_i$p1y,
-           arrow_i$ax,
-           arrow_i$ay,
-           lwd = lwd,
-           col = "grey14",
-           length = .25*plot_df$h[1],
-           angle = 20)
-
-    #TODO: make border optionally red if it's a direct dependency of the top-level one.
-    rect(
-      col = plot_df$pkg_col[i],
-      xleft = plot_df$xs[i],
-      xright = plot_df$xe[i],
-      ybottom = plot_df$ys[i],
-      ytop = plot_df$ye[i],
-      border = rgb(0,0,0,0)
-    )
-
-    text(
-      x = plot_df$V1[i],
-      y = plot_df$V2[i],
-      cex = cex,
-      col = plot_df$text_col[i],
-      labels = plot_df$pkg[i]
-    )
-  }
-
   og[c("cin", "cra", "csi", "cxy", "din", "page")] = NULL
+
   par(og)
 
   invisible()
