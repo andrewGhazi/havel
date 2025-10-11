@@ -8,6 +8,7 @@ plot_deps_graph(
   pkg,
   dep_type = c("depends", "imports", "linkingto"),
   pak_res = NULL,
+  info_method = "pak",
   n_iter = 100,
   init = "mds",
   gg = FALSE,
@@ -29,6 +30,10 @@ plot_deps_graph(
 
 \item{pak_res}{a pre-computed result from
 \code{\link[pak:pkg_deps]{pak::pkg_deps}}}
+
+\item{info_method}{either "pak" or "tools". The latter will use
+\code{\link[tools:package_dependencies]{tools::package_dependencies}} to
+look up package info.}
 
 \item{n_iter}{number of iterations for stress graph layout computation}
 
@@ -67,7 +72,7 @@ If you include \code{"suggests"} among the dependency types to look
   the node coloring will be turned off.
 
   Pre-computing the dependency lookup with
-  \code{\link[pak:pkg_deps]{pak::pkg_dep}} and passing it to the
+  \code{\link[pak:pkg_deps]{pak::pkg_deps}} and passing it to the
   \code{pak_res} argument can be handy when fiddling with graphical
   parameters. Also handy to avoid hitting the bundled GitHub PAT limits used
   by pak::pkg_deps().
