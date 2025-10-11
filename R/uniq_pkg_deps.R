@@ -28,9 +28,10 @@
 uniq_pkg_deps = function(pkg,
                          dep_type = c("depends", "imports", "linkingto"),
                          pak_res = NULL,
+                         info_method = "pak",
                          order = 1) {
 
-  prgc = get_pkg_graph(pkg, dep_type, pak_res)
+  prgc = get_pkg_graph(pkg, dep_type, pak_res, info_method = info_method)
 
   pak_res = prgc[[1]]
 
