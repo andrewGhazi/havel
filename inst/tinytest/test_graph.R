@@ -6,9 +6,11 @@
 #' figure out if calling pak::pkg_deps is allowed on CRAN
 
 test_graph = function() {
+  options(repos = "https://cloud.r-project.org")
+
   dt_res = havel:::get_pkg_graph("data.table",
-                                     dep_type = c("depends", "imports", "linkingto"),
-                                     pak_res = NULL)
+                                 dep_type = c("depends", "imports", "linkingto"),
+                                 pak_res = NULL)
 
   dt_edges = dt_res[[2]]
 
@@ -21,4 +23,6 @@ test_graph = function() {
 
 }
 
-test_graph()
+if (at_home()) {
+  test_graph()
+}

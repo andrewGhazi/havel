@@ -18,4 +18,6 @@ test_nontrivial_plot = function() {
 
 }
 
-test_nontrivial_plot()
+if (at_home()) test_small_plot()
+if (at_home()) test_empty_plot()
+if (at_home()) test_nontrivial_plot()
