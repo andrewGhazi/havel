@@ -69,7 +69,7 @@ avoid dependence on `Rcpp`.
 uniq_pkg_deps("ggplot2")
 #>            p1 n_uniq                                   uniq_pkgs
 #>        <char>  <num>                                      <list>
-#>  1:    scales      6 RColorBrewer,viridisLite,labeling,R6,farver
+#>  1:    scales      6 labeling,RColorBrewer,viridisLite,R6,farver
 #>  2:       cli      1                                            
 #>  3: grDevices      1                                            
 #>  4:      grid      1                                            
@@ -96,12 +96,12 @@ uniq_pkg_deps("ggplot2", order = 2) |>
   head()
 #>           p1     p2 n_uniq                                            uniq_pkgs
 #>       <char> <char>  <num>                                               <list>
-#> 1:    scales  withr      8 RColorBrewer,graphics,viridisLite,labeling,R6,farver
-#> 2:       cli scales      7          RColorBrewer,viridisLite,labeling,R6,farver
-#> 3: grDevices scales      7          RColorBrewer,viridisLite,labeling,R6,farver
-#> 4:      grid scales      7          RColorBrewer,viridisLite,labeling,R6,farver
-#> 5:    gtable scales      7          RColorBrewer,viridisLite,labeling,R6,farver
-#> 6:   isoband scales      7          RColorBrewer,viridisLite,labeling,R6,farver
+#> 1:    scales  withr      8 labeling,RColorBrewer,viridisLite,R6,graphics,farver
+#> 2:       cli scales      7          labeling,RColorBrewer,viridisLite,R6,farver
+#> 3: grDevices scales      7          labeling,RColorBrewer,viridisLite,R6,farver
+#> 4:      grid scales      7          labeling,RColorBrewer,viridisLite,R6,farver
+#> 5:    gtable scales      7          labeling,RColorBrewer,viridisLite,R6,farver
+#> 6:   isoband scales      7          labeling,RColorBrewer,viridisLite,R6,farver
 ```
 
 `scales` + `withr` introduce eight.
@@ -155,11 +155,12 @@ burdens. (Plus, every permutation of “pkg”/“dep”/“graph” was taken.)
 ## TODO
 
 - more tests
-  - properly handle cases with 0/1 deps, local packages, etc
+  - properly handle cases with ~~0/1 deps~~, local packages, etc
 - color edges by dependency type
 - ~~copy over ggplot version~~ ✓
 - highlight direct dependencies
 - ~~uniq_pkg_deps() function~~ ✓
 - eliminate my precious pipes so I don’t require R \>= 4.1
-- Fix missing arrows between base packages (e.g. currently there are
-  arrows missing from `methods` → `utils`,`stats`)
+- ~~Fix missing arrows between base packages (e.g. currently there are
+  arrows missing from `methods` → `utils`,`stats`)~~
+  - This can be fixed by setting `info_method = "tools"`

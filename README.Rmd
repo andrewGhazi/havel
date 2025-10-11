@@ -114,10 +114,11 @@ Havel's Ring is an item in Dark Souls that helps you deal with excessive burdens
 ## TODO
 
 * more tests
-  * properly handle cases with 0/1 deps, local packages, etc
+  * properly handle cases with ~~0/1 deps~~, local packages, etc
 * color edges by dependency type
 * ~~copy over ggplot version~~ ✓
 * highlight direct dependencies
 * ~~uniq_pkg_deps() function~~ ✓
 * eliminate my precious pipes so I don't require R >= 4.1 
-* Fix missing arrows between base packages (e.g. currently there are arrows missing from `methods` → `utils`,`stats`)
+* ~~Fix missing arrows between base packages (e.g. currently there are arrows missing from `methods` → `utils`,`stats`)~~
+  * This can be fixed by setting `info_method = "tools"`
