@@ -8,6 +8,7 @@ uniq_pkg_deps(
   pkg,
   dep_type = c("depends", "imports", "linkingto"),
   pak_res = NULL,
+  info_method = "pak",
   order = 1
 )
 }
@@ -19,6 +20,10 @@ uniq_pkg_deps(
 
 \item{pak_res}{a pre-computed result from
 \code{\link[pak:pkg_deps]{pak::pkg_deps}}}
+
+\item{info_method}{either "pak" or "tools". The latter will use
+\code{\link[tools:package_dependencies]{tools::package_dependencies}} to
+look up package info.}
 
 \item{order}{Consider combinations of this many packages. Be careful going
 beyond 3.}
