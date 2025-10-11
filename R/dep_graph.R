@@ -1,17 +1,23 @@
 
 get_gr_layout = function(df, nds, init) {
 
-  gr = cppRouting::makegraph(df, directed = FALSE)
-
-  D = cppRouting::get_distance_matrix(gr, from = nds, to = nds)
-
-  if (init == "mds") {
-    x_init = stats::cmdscale(D) + rnorm(2*nrow(D), sd = .3)
+  if (length(nds) == 1) {
+    matrix(c(0,0), ncol = 2)
+  } else if (length(nds) == 2) {
+    matrix(c(0,1,0,0), ncol = 2)
   } else {
-    x_init = matrix(rnorm(2*nrow(D), sd = .3), ncol = 2)
-  }
+    gr = cppRouting::makegraph(df, directed = FALSE)
 
-  stress_layout(x_init, D, iter = 10, tol = 1e-3)
+    D = cppRouting::get_distance_matrix(gr, from = nds, to = nds)
+
+    if (init == "mds") {
+      x_init = stats::cmdscale(D) + rnorm(2*nrow(D), sd = .3)
+    } else {
+      x_init = matrix(rnorm(2*nrow(D), sd = .3), ncol = 2)
+    }
+
+    stress_layout(x_init, D, iter = 10, tol = 1e-3)
+  }
 }
 
 get_igraph_gr = function(pkg, edge_vec) {
