@@ -5,6 +5,7 @@
 
 <!-- badges: start -->
 
+[![R-CMD-check](https://github.com/andrewGhazi/havel/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/andrewGhazi/havel/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 The goal of havel is to vizualize and tabulate dependencies in R
@@ -69,7 +70,7 @@ avoid dependence on `Rcpp`.
 uniq_pkg_deps("ggplot2")
 #>            p1 n_uniq                                   uniq_pkgs
 #>        <char>  <num>                                      <list>
-#>  1:    scales      6 labeling,RColorBrewer,viridisLite,R6,farver
+#>  1:    scales      6 labeling,R6,viridisLite,farver,RColorBrewer
 #>  2:       cli      1                                            
 #>  3: grDevices      1                                            
 #>  4:      grid      1                                            
@@ -96,12 +97,12 @@ uniq_pkg_deps("ggplot2", order = 2) |>
   head()
 #>           p1     p2 n_uniq                                            uniq_pkgs
 #>       <char> <char>  <num>                                               <list>
-#> 1:    scales  withr      8 labeling,RColorBrewer,viridisLite,R6,graphics,farver
-#> 2:       cli scales      7          labeling,RColorBrewer,viridisLite,R6,farver
-#> 3: grDevices scales      7          labeling,RColorBrewer,viridisLite,R6,farver
-#> 4:      grid scales      7          labeling,RColorBrewer,viridisLite,R6,farver
-#> 5:    gtable scales      7          labeling,RColorBrewer,viridisLite,R6,farver
-#> 6:   isoband scales      7          labeling,RColorBrewer,viridisLite,R6,farver
+#> 1:    scales  withr      8 labeling,R6,graphics,viridisLite,farver,RColorBrewer
+#> 2:       cli scales      7          labeling,R6,viridisLite,farver,RColorBrewer
+#> 3: grDevices scales      7          labeling,R6,viridisLite,farver,RColorBrewer
+#> 4:      grid scales      7          labeling,R6,viridisLite,farver,RColorBrewer
+#> 5:    gtable scales      7          labeling,R6,viridisLite,farver,RColorBrewer
+#> 6:   isoband scales      7          labeling,R6,viridisLite,farver,RColorBrewer
 ```
 
 `scales` + `withr` introduce eight.

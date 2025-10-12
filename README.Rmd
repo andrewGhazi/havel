@@ -16,6 +16,7 @@ knitr::opts_chunk$set(
 # havel
 
 <!-- badges: start -->
+[![R-CMD-check](https://github.com/andrewGhazi/havel/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/andrewGhazi/havel/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 The goal of havel is to vizualize and tabulate dependencies in R packages. This will help R package developers identify dependencies that contribute more to the dependency load and/or are easier to remove.
