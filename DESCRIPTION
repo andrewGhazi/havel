@@ -16,10 +16,15 @@ Imports:
     cppRouting,
     data.table,
     graphics,
+    grDevices,
     grid,
+    methods,
     pak,
     Rcpp,
-    rlang
+    rlang,
+    stats,
+    tools,
+    utils
 Suggests: 
     ggplot2,
     ggraph,
