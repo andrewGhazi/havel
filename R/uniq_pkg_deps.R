@@ -46,11 +46,12 @@ uniq_pkg_deps = function(pkg,
 
   # as.data.table(ns_df)[,unlist(ds_deps), by = pkg]
 
-  dir_deps = pak_res |> # TODO: move this behavior to separate function
-    sbt(package %==% pkg) |>
-    pull1("deps") |>
-    sbt(tolower(type) %in% dep_type) |>
-    sbt(ref != "R") |>
+  top_level_res = pak_res |> # TODO: move this behavior to separate function
+    sbt(pak_res$package %==% pkg) |>
+    pull1("deps")
+
+  dir_deps = top_level_res |>
+    sbt(top_level_res$ref != "R" & tolower(top_level_res$type) %in% dep_type) |>
     get_elem("package")
 
   combn_df = combn(dir_deps, order) |>
@@ -66,8 +67,9 @@ uniq_pkg_deps = function(pkg,
   # TODO: loop through groups
 
   ds_by_grp = combn_df |>
-    slt(-p_i) |>
     data.table::as.data.table()
+
+  slt(ds_by_grp, "p_i") = NULL
 
   tall_ds_by_grp = ds_by_grp[,list(pg = paste0(pkg, collapse=";"),
                                    pl = funique(unlist(.SD))),
@@ -94,14 +96,17 @@ uniq_pkg_deps = function(pkg,
                   grp_memb_df,
                   dir_deps)
 
-  combn_df |>
-    slt(group, p_i, pkg) |>
+  res = combn_df |>
+    slt("group", "p_i", "pkg") |>
     pivot(how = "wider", names = "p_i", values = "pkg") |>
     roworder(group) |>
     mtt(n_uniq = lengths(i_uniq) + order,
         uniq_pkgs = i_uniq) |>
-    roworder(-n_uniq) |>
-    slt(-group)
+    roworderv("n_uniq", decreasing = TRUE)
+
+  slt(res, "group") = NULL
+
+  res
 
 }
 
