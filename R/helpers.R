@@ -22,12 +22,13 @@ pull1 = function(l, x, i = 1) {
 }
 
 clean_pkg_nm = function(pkg, pak_res) {
+  pak_ss = ss(pak_res, pak_res$direct)
 
   # This should handle pkg = "." I think?
-  if (pkg != sbt(pak_res, direct)$ref[1]) pkg = sbt(pak_res, direct)$package[1]
+  if (pkg != pak_ss$ref[1]) pkg = pak_ss$package[1]
 
   # TODO: strip repo owner names from pkg
-  if (grepl("\\/", pkg)) pkg = pak_res |> sbt(direct) |> getElement('package')
+  if (grepl("\\/", pkg)) pkg = pak_ss$package
 
   pkg
 }
