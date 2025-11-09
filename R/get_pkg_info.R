@@ -122,14 +122,15 @@ get_pkg_graph = function(pkg, dep_type, pak_res, info_method) {
   pak_res = pak_res %||% get_pkg_info(pkg, dep_type, info_method)
 
   # This should handle pkg = "." I think?
-  if (pkg != sbt(pak_res, direct)$ref[1]) pkg = sbt(pak_res, direct)$package[1]
+  pak_ss = ss(pak_res, pak_res$direct)
+  if (pkg != pak_ss$ref[1]) pkg = pak_ss$package[1]
 
   # TODO: attach connection type as well
 
   # V This prints an empty message...
   nested_pkg_list = pak_res |>
-    slt(package, deps) |>
-    frename(from = package)
+    slt(c("package", "deps")) |>
+    frename(from = "package")
 
   l = nested_pkg_list$deps
 
@@ -139,13 +140,15 @@ get_pkg_graph = function(pkg, dep_type, pak_res, info_method) {
                      idcol = "from") |>
     frename(to = "package") |>
     qDT() |>
-    mtt(from = as.character(from))
+    ftransformv(vars = "from", FUN = as.character)
 
   edge_list = unnested |>
-    sbt(tolower(type) %in% dep_type) |>
-    slt(from:to) |>
-    funique() |>
-    sbt(to != "R")
+    sbt(tolower(unnested$type) %iin% dep_type) |>
+    slt(c("from", "ref", "type", "to")) |>
+    funique()
+
+  edge_list = edge_list |>
+    sbt(edge_list$to != "R")
 
   edge_vec = mapply(\(x,y) c(x,y),
                     edge_list$from, edge_list$to) |>
