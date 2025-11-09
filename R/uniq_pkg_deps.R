@@ -69,9 +69,10 @@ uniq_pkg_deps = function(pkg,
     slt(-p_i) |>
     data.table::as.data.table()
 
-  tall_ds_by_grp = ds_by_grp[,.(pg = paste0(pkg, collapse=";"),
-                                pl = funique(unlist(ds_deps))),
-                             by = group]
+  tall_ds_by_grp = ds_by_grp[,list(pg = paste0(pkg, collapse=";"),
+                                   pl = funique(unlist(.SD))),
+                             by = group,
+                             .SDcols = "ds_deps"]
   # ^ fast data.table unnesting
 
   # tall_ds_by_grp$pl[whichNA(tall_ds_by_grp$pl)] = NULL
