@@ -70,7 +70,7 @@ avoid dependence on `Rcpp`.
 uniq_pkg_deps("ggplot2")
 #>            p1 n_uniq                                   uniq_pkgs
 #>        <char>  <num>                                      <list>
-#>  1:    scales      6 labeling,R6,viridisLite,farver,RColorBrewer
+#>  1:    scales      6 farver,labeling,viridisLite,R6,RColorBrewer
 #>  2:       cli      1                                            
 #>  3: grDevices      1                                            
 #>  4:      grid      1                                            
@@ -97,12 +97,12 @@ uniq_pkg_deps("ggplot2", order = 2) |>
   head()
 #>           p1     p2 n_uniq                                            uniq_pkgs
 #>       <char> <char>  <num>                                               <list>
-#> 1:    scales  withr      8 labeling,R6,graphics,viridisLite,farver,RColorBrewer
-#> 2:       cli scales      7          labeling,R6,viridisLite,farver,RColorBrewer
-#> 3: grDevices scales      7          labeling,R6,viridisLite,farver,RColorBrewer
-#> 4:      grid scales      7          labeling,R6,viridisLite,farver,RColorBrewer
-#> 5:    gtable scales      7          labeling,R6,viridisLite,farver,RColorBrewer
-#> 6:   isoband scales      7          labeling,R6,viridisLite,farver,RColorBrewer
+#> 1:    scales  withr      8 farver,labeling,graphics,viridisLite,R6,RColorBrewer
+#> 2:       cli scales      7          farver,labeling,viridisLite,R6,RColorBrewer
+#> 3: grDevices scales      7          farver,labeling,viridisLite,R6,RColorBrewer
+#> 4:      grid scales      7          farver,labeling,viridisLite,R6,RColorBrewer
+#> 5:    gtable scales      7          farver,labeling,viridisLite,R6,RColorBrewer
+#> 6:   isoband scales      7          farver,labeling,viridisLite,R6,RColorBrewer
 ```
 
 `scales` + `withr` introduce eight.
