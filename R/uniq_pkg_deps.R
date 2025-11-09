@@ -60,7 +60,7 @@ uniq_pkg_deps = function(pkg,
     mtt(group = 1:choose(length(dir_deps), order)) |>
     pivot(ids = "group", names = list("p_i", "pkg")) |>
     join(ns_df, on = "pkg", verbose = FALSE) |>
-    roworder(group) |> # get_n_ds_uniq.cpp requires this ordering, don't drop it.
+    roworder("group") |> # get_n_ds_uniq.cpp requires this ordering, don't drop it.
     qDT()
 
   # TODO: loop through groups
@@ -109,21 +109,24 @@ get_uniq_i = function(i,
                       grp_memb_df,
                       dir_deps) {
 
-  i_df = tall_ds_by_grp |> sbt(group %==% i)
+  i_df = tall_ds_by_grp |> sbt(tall_ds_by_grp$group %==% i)
 
   i_pkgs = grp_memb_df |>
-    sbt(group %==% i) |>
+    sbt(grp_memb_df$group %==% i) |>
     get_elem("pkg")
 
-  any_i_df = grp_memb_df |>
-    gby(group) |>
-    mtt(any_i = any(pkg %in% i_pkgs)) |>
-    fungroup() |>
-    sbt(!any_i)
+  .any_in = function(p) {
+    any(p %iin% i_pkgs)
+  }
 
-  anti_i = any_i_df$group |> funique()
+  any_i_df = collapv(grp_memb_df, by = "group", catFUN = .any_in) |>
+    frename(any_i = "pkg")
 
-  ni_df = tall_ds_by_grp |> sbt(group %iin% anti_i)
+  any_memb_df = grp_memb_df |> join(any_i_df, on = "group", verbose = FALSE)
+
+  anti_i = funique(any_memb_df$group)
+
+  ni_df = tall_ds_by_grp |> ss(tall_ds_by_grp$group %iin% anti_i)
 
   ni_and_dir = funique(c(ni_df$pl, dir_deps))
 
