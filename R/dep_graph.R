@@ -269,10 +269,10 @@ draw_pkg_graph = function(plot_df, evt, pkg, lwd,
   cxy = par("cxy")
 
   plot_df = plot_df |>
-    mtt(ws = V1 - .5 * nchar(pkg) * cxy[1],
-        we = V1 + .5 * nchar(pkg) * cxy[1],
-        ts = V2 - .5 * cxy[2],
-        te = V2 + .5 * cxy[2])
+    mtt(ws = plot_df$V1 - .5 * nchar(pkg) * cxy[1],
+        we = plot_df$V1 + .5 * nchar(pkg) * cxy[1],
+        ts = plot_df$V2 - .5 * cxy[2],
+        te = plot_df$V2 + .5 * cxy[2])
 
   xr = c(fmin(plot_df$ws) - 2.75*pad_w, fmax(plot_df$we) + 2.75*pad_w)
 
@@ -307,25 +307,56 @@ draw_pkg_graph = function(plot_df, evt, pkg, lwd,
 
   plot_df = plot_df |>
     mtt(w = graphics::strwidth(pkg, cex = cex) + pad_w,
-        h = graphics::strheight("T", cex = cex) + pad_h,
-        xs = V1 - w/2,
-        xe = V1 + w/2,
-        ys = V2 - h/2,
-        ye = V2 + h/2,
-        text_col = c("#F2F2F2", "grey15")[(col_pos > 35) + 1]) |>
-    roworder(n_deps) # top-level package will always be on top
+        h = graphics::strheight("T", cex = cex) + pad_h)
+
+  plot_df = plot_df |> # Have to modify it in multiple steps to avoid "nonvisible binding" check notes...
+    mtt(xs = plot_df$V1 - plot_df$w/2,
+        xe = plot_df$V1 + plot_df$w/2,
+        ys = plot_df$V2 - plot_df$h/2,
+        ye = plot_df$V2 + plot_df$h/2,
+        text_col = c("#F2F2F2", "grey15")[(plot_df$col_pos > 35) + 1]) |>
+    roworder("n_deps") # top-level package will always be on top
 
   if (!is.null(evt)) {
+    j1 = slt(plot_df, c("p1" = "pkg",
+                        "p1x" = "V1",
+                        "p1y" = "V2"))
+
+    j2 = slt(plot_df, c("p2" = "pkg",
+                        "p2x" = "V1",
+                        "p2y" = "V2",
+                        "xs", "xe", "ys", "ye"))
+
+    # Again, need to assign arrow_df in multiple steps to avoid nonvisible
+    # binding notes.
     arrow_df = evt |>
       qDT() |>
       setColnames(c("p1", "p2")) |>
-      join(plot_df |> slt(p1 = pkg, p1x = V1, p1y = V2), verbose = FALSE) |>
-      join(plot_df |> slt(p2 = pkg, p2x = V1, p2y = V2, xs:ye), verbose = FALSE) |>
-      mtt(th = atan2(p2y - p1y, p2x - p1x), #theta
-          p2_th = atan2(p2y-ys, p2x-xs), # angle from the corner to the center of the box at pkg 2
-          p2_high = as.integer(p2y > p1y),
-          reg = get_region(abs(th), p2_th, p2_high, pi))  |>
-      mtt(get_axy(reg, xs, xe, ys, ye, th, p2x, p2y)) # needs to return an n x 2 df with columns ax and ay
+      join(j1, verbose = FALSE) |>
+      join(j2, verbose = FALSE)
+
+    arrow_df = arrow_df |>
+      mtt(th = atan2(arrow_df$p2y - arrow_df$p1y,
+                     arrow_df$p2x - arrow_df$p1x), #theta
+          p2_th = atan2(arrow_df$p2y - arrow_df$ys,
+                        arrow_df$p2x - arrow_df$xs), # angle from the corner to the center of the box at pkg 2
+          p2_high = as.integer(arrow_df$p2y > arrow_df$p1y))
+
+    arrow_df = arrow_df |>
+          mtt(reg = get_region(abs(arrow_df$th),
+                               arrow_df$p2_th,
+                               arrow_df$p2_high,
+                               pi))
+
+    arrow_df = arrow_df |>
+      mtt(get_axy(arrow_df$reg,
+                  arrow_df$xs,
+                  arrow_df$xe,
+                  arrow_df$ys,
+                  arrow_df$ye,
+                  arrow_df$th,
+                  arrow_df$p2x,
+                  arrow_df$p2y)) # needs to return an n x 2 df with columns ax and ay
   } else {
     arrow_df = data.table(p1 = "", p1x = 0, p1y = 0, ax = 0, ay = 0)
   }
@@ -337,7 +368,7 @@ draw_pkg_graph = function(plot_df, evt, pkg, lwd,
 
   for (i in 1:nrow(plot_df)) {
 
-    arrow_i = arrow_df |> sbt(whichv(p1, plot_df$pkg[i]))
+    arrow_i = arrow_df |> sbt(whichv(arrow_df$p1, plot_df$pkg[i]))
 
     arrows(arrow_i$p1x,
            arrow_i$p1y,
