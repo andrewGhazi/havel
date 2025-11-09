@@ -174,6 +174,7 @@ plot_deps_graph = function(pkg,
                    lwd = lwd,
                    pad_h = pad_h,
                    pad_w = pad_w,
+                   arw = arw,
                    cex = cex,
                    font_family = font_family,
                    ...)
@@ -248,6 +249,7 @@ draw_pkg_graph = function(plot_df, evt, pkg, lwd,
                           pad_h,
                           pad_w,
                           cex,
+                          arw,
                           font_family,
                           ...) {
 
@@ -343,7 +345,7 @@ draw_pkg_graph = function(plot_df, evt, pkg, lwd,
            arrow_i$ay,
            lwd = lwd,
            col = "grey14",
-           length = .375*plot_df$h[1],
+           length = .375*plot_df$h[1]*arw,
            angle = 20)
 
     #TODO: make border optionally red if it's a direct dependency of the top-level one.
