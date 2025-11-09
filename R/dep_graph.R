@@ -1,3 +1,6 @@
+# Need to use globalVariables to address a couple of nonvisible binding notes in
+# ggraph that would be difficult to avoid otherwise.
+globalVariables(c("node2.name", "name"))
 
 get_gr_layout = function(df, nds, init) {
 
@@ -162,13 +165,20 @@ plot_deps_graph = function(pkg,
 
     layout_mat = get_gr_layout(df, nds, init)
 
+    # Multiple steps to avoid NOTEs
     plot_df = layout_mat |>
       qDT() |>
       mtt(pkg = nds) |>
-      join(ns_df, on = "pkg", verbose = FALSE) |>
-      mtt(n_deps = lengths(ds_deps),
-          col_pos = floor(99*n_deps / max(n_deps) + 1),
-          pkg_col = parula[col_pos])
+      join(ns_df, on = "pkg", verbose = FALSE)
+
+    plot_df = plot_df |>
+      mtt(n_deps = lengths(plot_df$ds_deps))
+
+    plot_df = plot_df |>
+      mtt(col_pos = floor(99*plot_df$n_deps / max(plot_df$n_deps) + 1))
+
+    plot_df = plot_df |>
+      mtt(pkg_col = parula[plot_df$col_pos])
 
     draw_pkg_graph(plot_df, evt, pkg,
                    lwd = lwd,
