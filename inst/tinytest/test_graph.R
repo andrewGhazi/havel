@@ -13,7 +13,8 @@ test_graph = function() {
                                  dep_type = c("depends", "imports", "linkingto"),
                                  pak_res = NULL,
                                  info_method = "pak")
-  options("repos") = og
+
+  if (og != "@CRAN@") options("repos" = og)
 
   dt_edges = dt_res[[2]]
 
