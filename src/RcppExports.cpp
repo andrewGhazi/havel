@@ -55,6 +55,19 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// group_memb_check
+LogicalVector group_memb_check(IntegerVector group, CharacterVector pkg, CharacterVector i_pkgs);
+RcppExport SEXP _havel_group_memb_check(SEXP groupSEXP, SEXP pkgSEXP, SEXP i_pkgsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< IntegerVector >::type group(groupSEXP);
+    Rcpp::traits::input_parameter< CharacterVector >::type pkg(pkgSEXP);
+    Rcpp::traits::input_parameter< CharacterVector >::type i_pkgs(i_pkgsSEXP);
+    rcpp_result_gen = Rcpp::wrap(group_memb_check(group, pkg, i_pkgs));
+    return rcpp_result_gen;
+END_RCPP
+}
 // stress
 double stress(NumericMatrix x, NumericMatrix D);
 RcppExport SEXP _havel_stress(SEXP xSEXP, SEXP DSEXP) {
@@ -86,6 +99,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_havel_get_deps_memo", (DL_FUNC) &_havel_get_deps_memo, 3},
     {"_havel_get_region", (DL_FUNC) &_havel_get_region, 4},
     {"_havel_get_axy", (DL_FUNC) &_havel_get_axy, 8},
+    {"_havel_group_memb_check", (DL_FUNC) &_havel_group_memb_check, 3},
     {"_havel_stress", (DL_FUNC) &_havel_stress, 2},
     {"_havel_stress_layout", (DL_FUNC) &_havel_stress_layout, 4},
     {NULL, NULL, 0}

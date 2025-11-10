@@ -64,8 +64,6 @@ uniq_pkg_deps = function(pkg,
     roworder("group") |> # get_n_ds_uniq.cpp requires this ordering, don't drop it.
     qDT()
 
-  # TODO: loop through groups
-
   ds_by_grp = combn_df |>
     data.table::as.data.table()
 
@@ -83,7 +81,8 @@ uniq_pkg_deps = function(pkg,
 
   grp_memb_df = ds_by_grp |>
     slt(group, pkg) |>
-    funique()
+    funique() |>
+    roworder("group")
 
   # There's probably some fancy database-like operation for this, but we'll just
   # settle for the naive way: loop over groups. For each group, find any
@@ -121,14 +120,10 @@ get_uniq_i = function(i,
     sbt(grp_memb_df$group %==% i) |>
     get_elem("pkg")
 
-  .any_in = function(p) {
-    any(p %iin% i_pkgs)
-  }
-
-  any_i_df = collapv(grp_memb_df, by = "group", catFUN = .any_in) |>
-    frename(any_i = "pkg")
-
-  any_memb_df = grp_memb_df |> join(any_i_df, on = "group", verbose = FALSE)
+  any_memb_df = grp_memb_df |>
+    add_vars(any_i = group_memb_check(grp_memb_df$group,
+                                      grp_memb_df$pkg,
+                                      i_pkgs))
 
   anti_i = funique(any_memb_df$group)
 

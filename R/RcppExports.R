@@ -13,6 +13,10 @@ get_axy <- function(reg, xs, xe, ys, ye, th, p2x, p2y) {
     .Call(`_havel_get_axy`, reg, xs, xe, ys, ye, th, p2x, p2y)
 }
 
+group_memb_check <- function(group, pkg, i_pkgs) {
+    .Call(`_havel_group_memb_check`, group, pkg, i_pkgs)
+}
+
 stress <- function(x, D) {
     .Call(`_havel_stress`, x, D)
 }
