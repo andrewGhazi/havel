@@ -2,7 +2,8 @@
 test_small_plot = function() {
   # plot with 1 edge like data.table -> methods
 
-  expect_silent(havel::plot_deps_graph('data.table', font_family = "sans"))
+  expect_silent(havel::plot_deps_graph('data.table', font_family = "sans",
+                                       pak_res = havel:::pak_results[[1]]))
 
 }
 
@@ -15,7 +16,8 @@ test_empty_plot = function() {
 
 test_nontrivial_plot = function() {
 
-  expect_silent(havel::plot_deps_graph('ggplot2', font_family = "sans"))
+  expect_silent(havel::plot_deps_graph('ggplot2', font_family = "sans",
+                                       pak_res = havel:::pak_results[[2]] ))
 
 }
 
