@@ -53,7 +53,7 @@ LogicalVector group_memb_check(IntegerVector group, CharacterVector pkg, Charact
   }
 
   // Assign the results for the last group
-  for (int j = i_strt; j < (n-1); ++j) {
+  for (int j = i_strt; j < n; ++j) {
     res[j] = cur_res;
   }
 
