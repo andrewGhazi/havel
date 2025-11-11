@@ -89,8 +89,12 @@ If you include \code{"suggests"} among the dependency types to look
   MDS layout happens to overlap the legend or something.
 }
 \examples{
-# Using pkgcache in examples is not allowed, uncomment to run these interactively:
-# plot_deps_graph("ggplot2") # ggplot2 has many downstream dependencies
-# plot_deps_graph("rlang") # rlang has only one
+plot_deps_graph("ggplot2", pak_res = pkg_deps_ex$ggplot2)
+# ^ ggplot2 has a moderate number of dependencies
 
+# V data.table has only one
+plot_deps_graph("data.table", pak_res = pkg_deps_ex$data.table)
+
+# The `pak_res` arguments here are pre-computed results to avoid internet
+# access on CRAN's servers. They aren't required.
 }
