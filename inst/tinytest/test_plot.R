@@ -3,7 +3,7 @@ test_small_plot = function() {
   # plot with 1 edge like data.table -> methods
 
   expect_silent(havel::plot_deps_graph('data.table', font_family = "sans",
-                                       pak_res = havel:::pak_results[[1]]))
+                                       pak_res = havel::pkg_deps_ex$data.table))
 
 }
 
@@ -17,10 +17,10 @@ test_empty_plot = function() {
 test_nontrivial_plot = function() {
 
   expect_silent(havel::plot_deps_graph('ggplot2', font_family = "sans",
-                                       pak_res = havel:::pak_results[[2]] ))
+                                       pak_res = havel::pkg_deps_ex$ggplot2 ))
 
 }
 
-if (at_home()) test_small_plot()
+test_small_plot()
 if (at_home()) test_empty_plot()
-if (at_home()) test_nontrivial_plot()
+test_nontrivial_plot()

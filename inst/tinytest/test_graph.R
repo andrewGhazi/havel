@@ -35,8 +35,8 @@ test_graph_ggplot2 = function() {
                                  pak_res = NULL,
                                  info_method = "pak")})
 
-  expect_identical(gg_res_t[[1]] |> slt(ref, direct, package, deps),
-                   havel:::pak_results[[2]] |> slt(ref, direct, package, deps))
+  expect_identical(gg_res_t[[1]] |> collapse::slt(ref, direct, package, deps),
+                   havel::pkg_deps_ex$ggplot2 |> collapse::slt(ref, direct, package, deps))
 
 
 }

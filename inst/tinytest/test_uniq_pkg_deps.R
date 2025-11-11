@@ -20,3 +20,4 @@ test_uniq_pkg_deps_o2 = function() {
 }
 
 test_uniq_pkg_deps()
+test_uniq_pkg_deps_o2()
