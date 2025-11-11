@@ -21,8 +21,7 @@
 #' @seealso [plot_deps_graph()]
 #' @inheritParams plot_deps_graph
 #' @examples
-#' # pkgcache isn't allowed in examples, uncomment and run interactively:
-#' # uniq_pkg_deps("ggplot2")
+#' uniq_pkg_deps("ggplot2", pak_res = pkg_deps_ex$ggplot2)
 #' # ^ scales adds the most unique dependencies to ggplot2 -- 6 including itself.
 #' @importFrom utils combn
 #' @export
@@ -124,6 +123,8 @@ get_uniq_i = function(i,
     add_vars(any_i = group_memb_check(grp_memb_df$group,
                                       grp_memb_df$pkg,
                                       i_pkgs))
+
+  any_memb_df = any_memb_df |> ss(!any_memb_df$any_i)
 
   anti_i = funique(any_memb_df$group)
 

@@ -50,8 +50,7 @@ Use this function to identify which packages have the most unique
   haven't optimized the internals of this function much :)
 }
 \examples{
-# pkgcache isn't allowed in examples, uncomment and run interactively:
-# uniq_pkg_deps("ggplot2")
+uniq_pkg_deps("ggplot2", pak_res = pkg_deps_ex$ggplot2)
 # ^ scales adds the most unique dependencies to ggplot2 -- 6 including itself.
 }
 \seealso{
