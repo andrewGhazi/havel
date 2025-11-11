@@ -30,6 +30,13 @@ You can install the development version of havel from [GitHub](https://github.co
 pak::pak("andrewGhazi/havel")
 ```
 
+Once available on CRAN, install like so:
+
+```{r eval=FALSE}
+install.packages("havel")
+```
+
+
 ## Example
 
 `havel` has two main functions: `plot_deps_graph()` and `uniq_pkg_deps()`.
