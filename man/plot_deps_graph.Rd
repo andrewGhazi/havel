@@ -16,7 +16,7 @@ plot_deps_graph(
   cex = 1,
   pad_h = 0.09,
   pad_w = 0.07,
-  font_family = "Arial",
+  font_family = "ArialMT",
   arw = 1,
   log_col_scale = FALSE,
   ...

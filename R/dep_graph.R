@@ -107,7 +107,7 @@ plot_deps_graph = function(pkg,
                            cex = 1,
                            pad_h = .09,
                            pad_w = .07,
-                           font_family = "Arial",
+                           font_family = "ArialMT",
                            arw = 1,
                            log_col_scale = FALSE,
                            ...) {
