@@ -10,7 +10,10 @@ test_small_plot = function() {
 test_empty_plot = function() {
   # plot with 0 edges like utils
   # This one will warn because pak::pkg_deps fails for utils
+  og = getOption("repos")
+  options(repos = "https://cloud.r-project.org")
   expect_message(havel::plot_deps_graph('utils', font_family = "sans"))
+  if (og != "@CRAN@") options("repos" = og)
 
 }
 
