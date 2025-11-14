@@ -39,8 +39,8 @@ look up package info.}
 
 \item{init}{how to initialize layout, MDS (default) or randomly}
 
-\item{gg}{If true, use ggplot2 + ggraph to draw the plot instead of base
-graphics. Other graphical arguments below will be ignored.}
+\item{gg}{If true, use ggplot2 + ggraph to layout/draw the plot instead of
+base graphics. Other graphical arguments below will be ignored.}
 
 \item{lwd}{line width}
 
@@ -60,7 +60,7 @@ graphics. Other graphical arguments below will be ignored.}
 \item{...}{other arguments passed to par()}
 }
 \value{
-a ggplot
+No return value, called for side effect of producing a plot.
 }
 \description{
 Plot a package's dependency graph, coloring each node by the
@@ -77,9 +77,9 @@ If you include \code{"suggests"} among the dependency types to look
   parameters. Also handy to avoid hitting the bundled GitHub PAT limits used
   by pak::pkg_deps().
 
-  The arrows will be off if you resize the panel with the base graphics
-  version. Either set \code{gg=TRUE} or set your desired graphics device
-  size, then re-run your command.
+  The arrows and padding will be off if you resize the panel with the base
+  graphics version. Either set \code{gg=TRUE} or set your desired graphics
+  device size, then re-run your command.
 
   The layout in the base graphics version is initialized with a bit of random
   jitter. If you want to tweak it change the random seed and try again.

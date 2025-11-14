@@ -50,8 +50,8 @@ get_igraph_gr = function(pkg, edge_vec) {
 #' @param info_method either "pak" or "tools". The latter will use
 #'   \code{\link[tools:package_dependencies]{tools::package_dependencies}} to
 #'   look up package info.
-#' @param gg If true, use ggplot2 + ggraph to draw the plot instead of base
-#'   graphics. Other graphical arguments below will be ignored.
+#' @param gg If true, use ggplot2 + ggraph to layout/draw the plot instead of
+#'   base graphics. Other graphical arguments below will be ignored.
 #' @param lwd line width
 #' @param cex text size multiplication factor (see
 #'   \code{\link[graphics:par]{graphics::par}})
@@ -71,9 +71,9 @@ get_igraph_gr = function(pkg, edge_vec) {
 #'   parameters. Also handy to avoid hitting the bundled GitHub PAT limits used
 #'   by pak::pkg_deps().
 #'
-#'   The arrows will be off if you resize the panel with the base graphics
-#'   version. Either set \code{gg=TRUE} or set your desired graphics device
-#'   size, then re-run your command.
+#'   The arrows and padding will be off if you resize the panel with the base
+#'   graphics version. Either set \code{gg=TRUE} or set your desired graphics
+#'   device size, then re-run your command.
 #'
 #'   The layout in the base graphics version is initialized with a bit of random
 #'   jitter. If you want to tweak it change the random seed and try again.
@@ -82,7 +82,7 @@ get_igraph_gr = function(pkg, edge_vec) {
 #'   typically looks worse than MDS initialization. Generally only useful if the
 #'   MDS layout happens to overlap the legend or something.
 #'
-#' @returns a ggplot
+#' @returns No return value, called for side effect of producing a plot.
 #' @rawNamespace import(collapse, except = c(fdroplevels))
 #' @rawNamespace import(data.table, except = c(first, last, between, transpose))
 #' @importFrom stats rnorm cmdscale
