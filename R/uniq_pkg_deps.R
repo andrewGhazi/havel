@@ -6,16 +6,14 @@
 #' @param pkg a package to check
 #' @param order Consider combinations of this many packages. Be careful going
 #'   beyond 3.
-#' @details Use this function to identify which packages have the most unique
+#' @details Use this function to tabulate which packages have the most unique
 #'   downstream dependencies. For a package author, these are good targets to
-#'   prioritize for removal.
+#'   prioritize for removal if possible.
 #'
 #'   Because of the graph structure of dependencies, sometimes there isn't any
 #'   one package that adds a lot of unique dependencies, but there is a PAIR or
-#'   TRIPLET do. Set the \code{order} argument to check
-#'   which pairs, triplets, etc have the most unique dependencies. Be careful
-#'   going beyond 3 because the number of combinations grows quickly, and I
-#'   haven't optimized the internals of this function much :)
+#'   TRIPLET do. Set the \code{order} argument to check which pairs, triplets,
+#'   etc have the most unique dependencies.
 #' @returns A data.table listing the packages and the number of unique
 #'   dependencies.
 #' @seealso [plot_deps_graph()]
@@ -74,10 +72,6 @@ uniq_pkg_deps = function(pkg,
                              .SDcols = "ds_deps"]
   # ^ fast data.table unnesting
 
-  # tall_ds_by_grp$pl[whichNA(tall_ds_by_grp$pl)] = NULL
-
-  # setkey(tall_ds_by_grp, group) # sbt usually faster
-
   grp_memb_df = ds_by_grp |>
     slt(group, pkg) |>
     funique() |>
@@ -97,7 +91,7 @@ uniq_pkg_deps = function(pkg,
   res = combn_df |>
     slt("group", "p_i", "pkg") |>
     pivot(how = "wider", names = "p_i", values = "pkg") |>
-    roworder(group) |>
+    roworderv("group") |>
     mtt(n_uniq = lengths(i_uniq) + order,
         uniq_pkgs = i_uniq) |>
     roworderv("n_uniq", decreasing = TRUE)

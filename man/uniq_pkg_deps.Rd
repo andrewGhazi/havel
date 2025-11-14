@@ -38,16 +38,14 @@ A function for package developers to count which direct
   total.
 }
 \details{
-Use this function to identify which packages have the most unique
+Use this function to tabulate which packages have the most unique
   downstream dependencies. For a package author, these are good targets to
-  prioritize for removal.
+  prioritize for removal if possible.
 
   Because of the graph structure of dependencies, sometimes there isn't any
   one package that adds a lot of unique dependencies, but there is a PAIR or
-  TRIPLET do. Set the \code{order} argument to check
-  which pairs, triplets, etc have the most unique dependencies. Be careful
-  going beyond 3 because the number of combinations grows quickly, and I
-  haven't optimized the internals of this function much :)
+  TRIPLET do. Set the \code{order} argument to check which pairs, triplets,
+  etc have the most unique dependencies.
 }
 \examples{
 uniq_pkg_deps("ggplot2", pak_res = pkg_deps_ex$ggplot2)
