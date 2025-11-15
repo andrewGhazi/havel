@@ -41,8 +41,6 @@ uniq_pkg_deps = function(pkg,
 
   ns_df = get_deps_memo(evt[, 1], evt[, 2], pkg) |> list2DF()
 
-  # as.data.table(ns_df)[,unlist(ds_deps), by = pkg]
-
   top_level_res = pak_res |> # TODO: move this behavior to separate function
     sbt(pak_res$package %==% pkg) |>
     pull1("deps")
@@ -51,15 +49,7 @@ uniq_pkg_deps = function(pkg,
     sbt(top_level_res$ref != "R" & tolower(top_level_res$type) %in% dep_type) |>
     get_elem("package")
 
-  combn_df = combn(dir_deps, order) |>
-    t() |>
-    qDT() |>
-    setColnames(paste0("p", 1:order)) |>
-    mtt(group = 1:choose(length(dir_deps), order)) |>
-    pivot(ids = "group", names = list("p_i", "pkg")) |>
-    join(ns_df, on = "pkg", verbose = FALSE) |>
-    roworder("group") |> # get_n_ds_uniq.cpp requires this ordering, don't drop it.
-    qDT()
+  combn_df = get_combn_df(dir_deps, order, ns_df)
 
   ds_by_grp = combn_df |>
     data.table::as.data.table()
@@ -129,5 +119,18 @@ get_uniq_i = function(i,
   i_ds = na_rm(i_df$pl)
 
   i_ds[i_ds %!iin% ni_and_dir]
+
+}
+
+get_combn_df = function(dir_deps, order, ns_df) {
+  combn_df = combn(dir_deps, order) |>
+    t() |>
+    qDT() |>
+    setColnames(paste0("p", 1:order)) |>
+    mtt(group = 1:choose(length(dir_deps), order)) |>
+    pivot(ids = "group", names = list("p_i", "pkg")) |>
+    join(ns_df, on = "pkg", verbose = FALSE) |>
+    roworder("group") |> # get_n_ds_uniq.cpp requires this ordering, don't drop it.
+    qDT()
 
 }
