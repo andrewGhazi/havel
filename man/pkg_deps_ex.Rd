@@ -18,10 +18,10 @@ pkg_deps_ex
 }
 \description{
 This is a named list containing pre-computed examples of package dependency
-information for packages \code{data.table}, \code{ggplot2}, and \code{utils}
-pulled on Monday November 10th 2025. The first two use
-\code{\link[pak:pkg_deps]{pkg_deps}} from the \code{pak} package and the last
-one uses an internal function in \code{havel} that falls back to
+information for packages \code{data.table} (v1.17.8), \code{ggplot2}
+(v4.0.1), and \code{utils} pulled on Monday November 15th 2025. The first two
+use \code{\link[pak:pkg_deps]{pkg_deps}} from the \code{pak} package and the
+last one uses an internal function in \code{havel} that falls back to
 \code{\link[tools:package_dependencies]{package_dependencies}} from
 \code{tools} (\code{\link[pak:pkg_deps]{pkg_deps}} fails on base packages).
 These precomputed results are used to provide data to run the examples

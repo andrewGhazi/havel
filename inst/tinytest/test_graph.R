@@ -9,7 +9,7 @@ test_graph = function() {
   og = getOption("repos")
   options(repos = "https://cloud.r-project.org")
 
-  dt_res = suppressMessages({havel:::get_pkg_graph("data.table",
+  dt_res = suppressMessages({havel:::get_pkg_graph("data.table@1.17.8",
                                  dep_type = c("depends", "imports", "linkingto"),
                                  pak_res = NULL,
                                  info_method = "pak")})
@@ -30,7 +30,7 @@ test_graph = function() {
 test_graph_ggplot2 = function() {
   options(repos = "https://cloud.r-project.org")
 
-  gg_res_t = suppressMessages({havel:::get_pkg_graph("ggplot2",
+  gg_res_t = suppressMessages({havel:::get_pkg_graph("ggplot2@4.0.1",
                                  dep_type = c("depends", "imports", "linkingto"),
                                  pak_res = NULL,
                                  info_method = "pak")})

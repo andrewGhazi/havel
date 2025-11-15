@@ -1,5 +1,5 @@
 test_uniq_pkg_deps = function() {
-  res = havel::uniq_pkg_deps("ggplot2",
+  res = havel::uniq_pkg_deps("cran::ggplot2@4.0.1",
                              pak_res = havel::pkg_deps_ex$ggplot2)
 
   expect_equal(res$p1[1], "scales")
@@ -9,7 +9,7 @@ test_uniq_pkg_deps = function() {
 
 
 test_uniq_pkg_deps_o2 = function() {
-  res = havel::uniq_pkg_deps("ggplot2",
+  res = havel::uniq_pkg_deps("cran::ggplot2@4.0.1",
                              pak_res = havel::pkg_deps_ex$ggplot2,
                              order = 2)
 

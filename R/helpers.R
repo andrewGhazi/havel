@@ -22,6 +22,11 @@ pull1 = function(l, x, i = 1) {
 }
 
 clean_pkg_nm = function(pkg, pak_res) {
+
+  # Maybe it would be better to just get this information from the ref and/or
+  # package columns of pack res? That would be hard for relative references to
+  # local packages like . because those get parsed to "local::."
+
   pak_ss = ss(pak_res, pak_res$direct)
 
   # This should handle pkg = "." I think?
@@ -29,6 +34,9 @@ clean_pkg_nm = function(pkg, pak_res) {
 
   # TODO: strip repo owner names from pkg
   if (grepl("\\/", pkg)) pkg = pak_ss$package
+
+  # This shouldn't be necessary...
+  if (grepl("@", pkg)) pkg = gsub("@.+$", "", pkg)
 
   pkg
 }
