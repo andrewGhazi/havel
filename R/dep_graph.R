@@ -58,8 +58,8 @@ get_igraph_gr = function(pkg, edge_vec) {
 #' @param font_family family argument given to \code{par()}
 #' @param pad_h height padding
 #' @param pad_w width padding
+#' @param legend_loc one of "topright"/"topleft"/"bottomright"/"bottomleft" indicating where to draw the legend
 #' @param arw factor by which to lengthen/shorten arrowheads
-#' @param log_col_scale if TRUE, set node colors to vary on a log scale with
 #' @param ... other arguments passed to par()
 #' @details If you include \code{"suggests"} among the dependency types to look
 #'   up, be aware that suggests can be circular / cyclic. If this is detected,
@@ -109,16 +109,18 @@ plot_deps_graph = function(pkg,
                            pad_w = .07,
                            font_family = "ArialMT",
                            arw = 1,
-                           log_col_scale = FALSE,
+                           legend_loc = "topright",
+                           # log_col_scale = FALSE,
                            ...) {
 
   if (gg) {
     rlang::check_installed(c("ggplot2", "ggraph", "igraph", "pals"))
   }
 
-  if (log_col_scale) {
-    cli::cli_abort("log_col_scale not implemented yet!")
-  }
+  # @param log_col_scale if TRUE, set node colors to vary on a log scale with
+  # if (log_col_scale) {
+  #   cli::cli_abort("log_col_scale not implemented yet!")
+  # }
 
   if ("suggests" %in% tolower(dep_type)) {
     cli::cli_abort("Suggests aren't properly handled yet. (fun fact: Suggests can be cyclical!)")
@@ -130,6 +132,9 @@ plot_deps_graph = function(pkg,
 
   rlang::arg_match(info_method,
                    values = c("pak", "tools"))
+
+  rlang::arg_match(legend_loc,
+                   values = c("topright", "topleft", "bottomright", "bottomleft"))
 
   prgc = get_pkg_graph(pkg, dep_type, pak_res, info_method)
 
@@ -191,6 +196,7 @@ plot_deps_graph = function(pkg,
                    arw = arw,
                    cex = cex,
                    font_family = font_family,
+                   legend_loc = legend_loc,
                    ...)
 
   }
@@ -265,6 +271,7 @@ draw_pkg_graph = function(plot_df, evt, pkg, lwd,
                           cex,
                           arw,
                           font_family,
+                          legend_loc,
                           ...) {
 
   lght = "grey95"
@@ -414,6 +421,18 @@ draw_pkg_graph = function(plot_df, evt, pkg, lwd,
 
   # legend ------------------------------------------------------------------
 
+  draw_legend(plot_df, yr, xr, lght, legend_loc)
+
+  # reset par stuff ---------------------------------------------------------
+
+  og[c("cin", "cra", "csi", "cxy", "din", "page")] = NULL
+
+  par(og)
+
+  invisible()
+}
+
+draw_legend = function(plot_df, yr, xr, lght, legend_loc) {
   li = floor(seq(1,100, length.out = 30))
 
   labs = seq(min(1, min(plot_df$n_deps)), max(plot_df$n_deps), length.out = 4) |>
@@ -422,11 +441,15 @@ draw_pkg_graph = function(plot_df, evt, pkg, lwd,
 
   lcols = parula[li]
 
-  ly = yr[1] + .75*diff(yr) + (1:30 / 30 * .2*diff(yr))
+  lymod = if (grepl("top", legend_loc)) .75 else .05
+
+  lxmod = if (grepl("right", legend_loc)) .95 else .05
+
+  ly = yr[1] + lymod*diff(yr) + (1:30 / 30 * .2*diff(yr))
 
   lye = ly + (1 / 30 * .2*diff(yr))
 
-  lx = xr[1] + .95*diff(xr)
+  lx = xr[1] + lxmod*diff(xr)
 
   lxe = lx + .02*diff(xr)
 
@@ -447,10 +470,4 @@ draw_pkg_graph = function(plot_df, evt, pkg, lwd,
        col = lght,
        cex = .5)
 
-  og[c("cin", "cra", "csi", "cxy", "din", "page")] = NULL
-
-  par(og)
-
-  invisible()
 }
-

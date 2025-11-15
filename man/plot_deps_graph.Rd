@@ -18,7 +18,7 @@ plot_deps_graph(
   pad_w = 0.07,
   font_family = "ArialMT",
   arw = 1,
-  log_col_scale = FALSE,
+  legend_loc = "topright",
   ...
 )
 }
@@ -55,7 +55,7 @@ base graphics. Other graphical arguments below will be ignored.}
 
 \item{arw}{factor by which to lengthen/shorten arrowheads}
 
-\item{log_col_scale}{if TRUE, set node colors to vary on a log scale with}
+\item{legend_loc}{one of "topright"/"topleft"/"bottomright"/"bottomleft" indicating where to draw the legend}
 
 \item{...}{other arguments passed to par()}
 }
