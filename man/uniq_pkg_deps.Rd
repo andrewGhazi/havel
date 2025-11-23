@@ -29,8 +29,8 @@ look up package info.}
 beyond 3.}
 }
 \value{
-A data.table listing the packages and the number of unique
-  dependencies.
+A data.table listing the packages, number of unique dependencies,
+  and the unique dependencies themselves.
 }
 \description{
 A function for package developers to count which direct

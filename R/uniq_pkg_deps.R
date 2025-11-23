@@ -14,8 +14,8 @@
 #'   one package that adds a lot of unique dependencies, but there is a PAIR or
 #'   TRIPLET do. Set the \code{order} argument to check which pairs, triplets,
 #'   etc have the most unique dependencies.
-#' @returns A data.table listing the packages and the number of unique
-#'   dependencies.
+#' @returns A data.table listing the packages, number of unique dependencies,
+#'   and the unique dependencies themselves.
 #' @seealso [plot_deps_graph()]
 #' @inheritParams plot_deps_graph
 #' @examples
