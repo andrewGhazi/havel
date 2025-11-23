@@ -90,8 +90,8 @@ get_igraph_gr = function(pkg, edge_vec) {
 #' plot_deps_graph("ggplot2", pak_res = pkg_deps_ex$ggplot2)
 #' # ^ ggplot2 has a moderate number of dependencies
 #'
-#' # V data.table has only one
 #' plot_deps_graph("data.table", pak_res = pkg_deps_ex$data.table)
+#' # ^ data.table has only one
 #'
 #' # The `pak_res` arguments here are pre-computed results to avoid internet
 #' # access on CRAN's servers. They aren't required.
@@ -278,14 +278,14 @@ draw_pkg_graph = function(plot_df, evt, pkg, lwd,
 
   # par ---------------------------------------------------------------------
 
-  og = par()
+  old = par(bg = "grey53",
+            mar = c(2,2,1.5,1),
+            cex = 1.2,
+            family = font_family,
+            adj = 0,
+            ...)
 
-  par(bg = "grey53",
-      mar = c(2,2,1.5,1),
-      cex = 1.2,
-      family = font_family,
-      adj = 0,
-      ...) # TODO handle this appropriately? i.e. store op <- par() and do par(op) at the end?
+  on.exit(par(old), add = TRUE)
 
   cxy = par("cxy")
 
@@ -299,9 +299,7 @@ draw_pkg_graph = function(plot_df, evt, pkg, lwd,
 
   yr = c(fmin(plot_df$ts) - 2*pad_h, fmax(plot_df$te) + 2*pad_h)
 
-
   # initialize plot ---------------------------------------------------------
-
 
   plot(
     x = NULL,
@@ -314,7 +312,6 @@ draw_pkg_graph = function(plot_df, evt, pkg, lwd,
     xlab = "",
     ylab = ""
   )
-
 
   # title -------------------------------------------------------------------
 
@@ -377,7 +374,7 @@ draw_pkg_graph = function(plot_df, evt, pkg, lwd,
                   arrow_df$ye,
                   arrow_df$th,
                   arrow_df$p2x,
-                  arrow_df$p2y)) # needs to return an n x 2 df with columns ax and ay
+                  arrow_df$p2y))
   } else {
     arrow_df = data.table(p1 = "", p1x = 0, p1y = 0, ax = 0, ay = 0)
   }
@@ -423,19 +420,16 @@ draw_pkg_graph = function(plot_df, evt, pkg, lwd,
 
   draw_legend(plot_df, yr, xr, lght, legend_loc)
 
-  # reset par stuff ---------------------------------------------------------
-
-  og[c("cin", "cra", "csi", "cxy", "din", "page")] = NULL
-
-  par(og)
-
   invisible()
 }
 
 draw_legend = function(plot_df, yr, xr, lght, legend_loc) {
+
   li = floor(seq(1,100, length.out = 30))
 
-  labs = seq(min(1, min(plot_df$n_deps)), max(plot_df$n_deps), length.out = 4) |>
+  labs = seq(min(1, min(plot_df$n_deps)),
+             max(plot_df$n_deps),
+             length.out = 4) |>
     floor() |>
     as.character()
 
@@ -453,12 +447,14 @@ draw_legend = function(plot_df, yr, xr, lght, legend_loc) {
 
   lxe = lx + .02*diff(xr)
 
-  rect(lx, ly, lxe, lye, col = lcols, border = rgb(0,0,0,0))
+  rect(lx, ly, lxe, lye,
+       col = lcols,
+       border = rgb(0,0,0,0))
 
   text(cex = .85,
        labels = "# deps",
        x = lx,
-       y = max(lye) ,
+       y = max(lye),
        pos = 3,
        offset = .3,
        col = lght)
