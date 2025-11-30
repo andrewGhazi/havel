@@ -95,7 +95,7 @@ get_igraph_gr = function(pkg, edge_vec) {
 #' # ^ data.table has only one
 #'
 #' # The `pak_res` arguments here are pre-computed results to avoid internet
-#' # access on CRAN's servers. They aren't required.
+#' # access while running the examples on CRAN's servers. They aren't required.
 #' @export
 plot_deps_graph = function(pkg,
                            dep_type = c("depends", "imports", "linkingto"),
