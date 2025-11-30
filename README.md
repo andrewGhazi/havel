@@ -103,7 +103,7 @@ uniq_pkg_deps("ggplot2", order = 2) |>
   head()
 #>           p1     p2 n_uniq                                            uniq_pkgs
 #>       <char> <char>  <num>                                               <list>
-#> 1:    scales  withr      8 labeling,RColorBrewer,R6,graphics,viridisLite,farver
+#> 1:    scales  withr      8 labeling,RColorBrewer,graphics,R6,viridisLite,farver
 #> 2:       cli scales      7          labeling,RColorBrewer,R6,viridisLite,farver
 #> 3: grDevices scales      7          labeling,RColorBrewer,R6,viridisLite,farver
 #> 4:      grid scales      7          labeling,RColorBrewer,R6,viridisLite,farver
@@ -142,7 +142,7 @@ There are other packages / posts out there on this type of thing:
   - …but it includes a ggplot version too in the Suggests if you prefer
     that. Set `gg = TRUE`.
 - The default plotting parameters are carefully hand-crafted to look
-  nice 😊
+  nice :)
 
 ## FAQ
 

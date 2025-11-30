@@ -106,7 +106,7 @@ There are other packages / posts out there on this type of thing:
 * It uses `pak::pkg_deps()` to look up the dependency connections instead of `tools::package_dependencies()`. This enables more versatile lookups of packages on Bioc, GitHub, etc.
 * `havel` itself is fairly light and fast, depending only on pak, some fastverse packages, and base R graphics...
   * ...but it includes a ggplot version too in the Suggests if you prefer that. Set `gg = TRUE`.
-* The default plotting parameters are carefully hand-crafted to look nice 😊
+* The default plotting parameters are carefully hand-crafted to look nice :) 
 
 ## FAQ
 

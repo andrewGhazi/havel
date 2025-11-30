@@ -55,10 +55,10 @@ get_igraph_gr = function(pkg, edge_vec) {
 #' @param lwd line width
 #' @param cex text size multiplication factor (see
 #'   \code{\link[graphics:par]{graphics::par}})
-#' @param font_family family argument given to \code{par()}
 #' @param pad_h height padding
 #' @param pad_w width padding
-#' @param legend_loc one of "topright"/"topleft"/"bottomright"/"bottomleft" indicating where to draw the legend
+#' @param legend_loc one of "topright"/"topleft"/"bottomright"/"bottomleft"
+#'   indicating where to draw the legend
 #' @param arw factor by which to lengthen/shorten arrowheads
 #' @param ... other arguments passed to par()
 #' @details If you include \code{"suggests"} among the dependency types to look
@@ -107,7 +107,6 @@ plot_deps_graph = function(pkg,
                            cex = 1,
                            pad_h = .09,
                            pad_w = .07,
-                           font_family = "ArialMT",
                            arw = 1,
                            legend_loc = "topright",
                            # log_col_scale = FALSE,
@@ -195,7 +194,6 @@ plot_deps_graph = function(pkg,
                    pad_w = pad_w,
                    arw = arw,
                    cex = cex,
-                   font_family = font_family,
                    legend_loc = legend_loc,
                    ...)
 
@@ -270,7 +268,6 @@ draw_pkg_graph = function(plot_df, evt, pkg, lwd,
                           pad_w,
                           cex,
                           arw,
-                          font_family,
                           legend_loc,
                           ...) {
 
@@ -281,7 +278,6 @@ draw_pkg_graph = function(plot_df, evt, pkg, lwd,
   old = par(bg = "grey53",
             mar = c(2,2,1.5,1),
             cex = 1.2,
-            family = font_family,
             adj = 0,
             ...)
 

@@ -16,7 +16,6 @@ plot_deps_graph(
   cex = 1,
   pad_h = 0.09,
   pad_w = 0.07,
-  font_family = "ArialMT",
   arw = 1,
   legend_loc = "topright",
   ...
@@ -51,11 +50,10 @@ base graphics. Other graphical arguments below will be ignored.}
 
 \item{pad_w}{width padding}
 
-\item{font_family}{family argument given to \code{par()}}
-
 \item{arw}{factor by which to lengthen/shorten arrowheads}
 
-\item{legend_loc}{one of "topright"/"topleft"/"bottomright"/"bottomleft" indicating where to draw the legend}
+\item{legend_loc}{one of "topright"/"topleft"/"bottomright"/"bottomleft"
+indicating where to draw the legend}
 
 \item{...}{other arguments passed to par()}
 }
@@ -92,8 +90,8 @@ If you include \code{"suggests"} among the dependency types to look
 plot_deps_graph("ggplot2", pak_res = pkg_deps_ex$ggplot2)
 # ^ ggplot2 has a moderate number of dependencies
 
-# V data.table has only one
 plot_deps_graph("data.table", pak_res = pkg_deps_ex$data.table)
+# ^ data.table has only one
 
 # The `pak_res` arguments here are pre-computed results to avoid internet
 # access on CRAN's servers. They aren't required.
