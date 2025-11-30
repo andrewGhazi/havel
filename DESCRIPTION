@@ -1,6 +1,6 @@
 Package: havel
 Type: Package
-Title: Visualizing 'R' Package Dependencies 
+Title: Visualize and Tabulate 'R' Package Dependencies 
 Version: 1.0
 Authors@R: person("Andrew", "Ghazi", role = c("aut", "cre", "cph"), email = "andrew_ghazi@hms.harvard.edu")
 Description: The goal of 'havel' is to plot recursive dependency graphs and 
