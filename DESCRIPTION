@@ -42,3 +42,5 @@ Suggests:
     pals,
     tinytest
 LazyData: true
+URL: https://github.com/andrewGhazi/havel
+BugReports: https://github.com/andrewGhazi/havel/issues
