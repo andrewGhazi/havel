@@ -95,11 +95,11 @@ uniq_pkg_deps("ggplot2", order = 2) |>
 
 There are other packages / posts out there on this type of thing:
 
-* [`miniCRAN`](https://github.com/andrie/miniCRAN) has a [vignette on similar plotting functionality](https://cran.r-project.org/web/packages/miniCRAN/vignettes/miniCRAN-dependency-graph.html).
-* [`pkgnet`](https://uptake.github.io/pkgnet/index.html) offers an expansive dependency analysis suite.
-* [`depgraph`](https://github.com/crsh/depgraph) is pretty similar but uses different aesthetic mappings.
-* [`DependenciesGraphs`](https://datastorm-open.github.io/DependenciesGraphs/) and [`pkgdepR`](https://cran.r-project.org/web/packages/pkgdepR/index.html) visualize the dependencies of *functions* used within a package.
-* [`pkgndep`](https://cran.r-project.org/web/packages/pkgndep/index.html) visualizes similar information in a heatmap format, as well as provides different "heaviness" metrics.
+* [`miniCRAN`](https://cran.r-project.org/package=miniCRAN) has a vignette on similar plotting functionality: "Using miniCRAN to identify package dependencies".
+* [`pkgnet`](https://cran.r-project.org/package=pkgnet) offers an expansive dependency analysis suite.
+* [`depgraph`](https://github.com/crsh/depgraph) (on GitHub only, not CRAN) is pretty similar but uses different aesthetic mappings.
+* [`DependenciesGraphs`](https://datastorm-open.github.io/DependenciesGraphs/) and [`pkgdepR`](https://CRAN.R-project.org/package=pkgdepR) visualize the dependencies of *functions* used within a package.
+* [`pkgndep`](https://CRAN.R-project.org/package=pkgndep) visualizes similar information in a heatmap format, as well as provides different "heaviness" metrics.
 
 `havel` offers some unique advantages nonetheless:
 

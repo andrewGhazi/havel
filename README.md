@@ -76,7 +76,7 @@ avoid dependence on `Rcpp`.
 uniq_pkg_deps("ggplot2")
 #>            p1 n_uniq                                   uniq_pkgs
 #>        <char>  <num>                                      <list>
-#>  1:    scales      6 RColorBrewer,R6,labeling,farver,viridisLite
+#>  1:    scales      6 R6,viridisLite,RColorBrewer,farver,labeling
 #>  2:       cli      1                                            
 #>  3: grDevices      1                                            
 #>  4:      grid      1                                            
@@ -103,12 +103,12 @@ uniq_pkg_deps("ggplot2", order = 2) |>
   head()
 #>           p1     p2 n_uniq                                            uniq_pkgs
 #>       <char> <char>  <num>                                               <list>
-#> 1:    scales  withr      8 RColorBrewer,R6,labeling,graphics,farver,viridisLite
-#> 2:       cli scales      7          RColorBrewer,R6,labeling,farver,viridisLite
-#> 3: grDevices scales      7          RColorBrewer,R6,labeling,farver,viridisLite
-#> 4:      grid scales      7          RColorBrewer,R6,labeling,farver,viridisLite
-#> 5:    gtable scales      7          RColorBrewer,R6,labeling,farver,viridisLite
-#> 6:   isoband scales      7          RColorBrewer,R6,labeling,farver,viridisLite
+#> 1:    scales  withr      8 R6,viridisLite,graphics,RColorBrewer,farver,labeling
+#> 2:       cli scales      7          R6,viridisLite,RColorBrewer,farver,labeling
+#> 3: grDevices scales      7          R6,viridisLite,RColorBrewer,farver,labeling
+#> 4:      grid scales      7          R6,viridisLite,RColorBrewer,farver,labeling
+#> 5:    gtable scales      7          R6,viridisLite,RColorBrewer,farver,labeling
+#> 6:   isoband scales      7          R6,viridisLite,RColorBrewer,farver,labeling
 ```
 
 `scales` + `withr` introduce eight.
@@ -117,20 +117,19 @@ uniq_pkg_deps("ggplot2", order = 2) |>
 
 There are other packages / posts out there on this type of thing:
 
-- [`miniCRAN`](https://github.com/andrie/miniCRAN) has a [vignette on
-  similar plotting
-  functionality](https://cran.r-project.org/web/packages/miniCRAN/vignettes/miniCRAN-dependency-graph.html).
-- [`pkgnet`](https://uptake.github.io/pkgnet/index.html) offers an
+- [`miniCRAN`](https://cran.r-project.org/package=miniCRAN) has a
+  vignette on similar plotting functionality: “Using miniCRAN to
+  identify package dependencies”.
+- [`pkgnet`](https://cran.r-project.org/package=pkgnet) offers an
   expansive dependency analysis suite.
-- [`depgraph`](https://github.com/crsh/depgraph) is pretty similar but
-  uses different aesthetic mappings.
+- [`depgraph`](https://github.com/crsh/depgraph) (on GitHub only, not
+  CRAN) is pretty similar but uses different aesthetic mappings.
 - [`DependenciesGraphs`](https://datastorm-open.github.io/DependenciesGraphs/)
-  and
-  [`pkgdepR`](https://cran.r-project.org/web/packages/pkgdepR/index.html)
-  visualize the dependencies of *functions* used within a package.
-- [`pkgndep`](https://cran.r-project.org/web/packages/pkgndep/index.html)
-  visualizes similar information in a heatmap format, as well as
-  provides different “heaviness” metrics.
+  and [`pkgdepR`](https://CRAN.R-project.org/package=pkgdepR) visualize
+  the dependencies of *functions* used within a package.
+- [`pkgndep`](https://CRAN.R-project.org/package=pkgndep) visualizes
+  similar information in a heatmap format, as well as provides different
+  “heaviness” metrics.
 
 `havel` offers some unique advantages nonetheless:
 
