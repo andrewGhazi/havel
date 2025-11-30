@@ -66,10 +66,8 @@ Plot a package's dependency graph, coloring each node by the
   number of packages it depends on.
 }
 \details{
-If you include \code{"suggests"} among the dependency types to look
-  up, be aware that suggests can be circular / cyclic. If this is detected,
-  the node coloring will be turned off. Including suggests is currently only
-  supported when \code{gg = TRUE}.
+\code{dep_type = "suggests"} is currently not supported because
+  Suggests can be cyclic.
 
   Pre-computing the dependency lookup with
   \code{\link[pak:pkg_deps]{pak::pkg_deps}} and passing it to the
@@ -77,9 +75,9 @@ If you include \code{"suggests"} among the dependency types to look
   parameters. Also handy to avoid hitting the bundled GitHub PAT limits used
   by pak::pkg_deps().
 
-  The arrows and padding will be off if you resize the panel with the base
-  graphics version. Either set \code{gg=TRUE} or set your desired graphics
-  device size, then re-run your command.
+  The arrows and padding will be off if you resize the graphics window with
+  the base graphics version. Either set \code{gg=TRUE} or set your desired
+  graphics device size, then re-run your command.
 
   The layout in the base graphics version is initialized with a bit of random
   jitter. If you want to tweak it change the random seed and try again.
