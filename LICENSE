@@ -1,8 +1,9 @@
 The C++ stress layout functions in this package (src/stress.cpp) are adapted
-from similar functions in the `graphlayouts` package (GitHub permalink below for
-reference), which is provided under the MIT license. Therefore, src/stress.cpp
-is provided under the MIT license as well (provided below). The remainder of
-this package is provided under the GPL v3 license below that.
+(simplified and slightly optimized) from similar functions in the `graphlayouts`
+package (GitHub permalink below for reference), which is provided under the MIT
+license. Therefore, src/stress.cpp is provided under the MIT license as well
+(provided below). The remainder of this package is provided under the GPL v3
+license below that.
 
 https://github.com/schochastics/graphlayouts/blob/3d982412e56aa27207b8b657e57952fe3333ccfb/src/stress.cpp
 
@@ -31,7 +32,7 @@ SOFTWARE.
 GNU General Public License
 ==========================
 
-_Version 3, 29 June 2007_  
+_Version 3, 29 June 2007_
 _Copyright © 2007 Free Software Foundation, Inc. &lt;<http://fsf.org/>&gt;_
 
 Everyone is permitted to copy and distribute verbatim copies of this license
