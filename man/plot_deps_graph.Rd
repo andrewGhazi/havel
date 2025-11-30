@@ -96,3 +96,6 @@ plot_deps_graph("data.table", pak_res = pkg_deps_ex$data.table)
 # The `pak_res` arguments here are pre-computed results to avoid internet
 # access on CRAN's servers. They aren't required.
 }
+\seealso{
+\code{\link{uniq_pkg_deps}}
+}

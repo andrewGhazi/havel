@@ -52,5 +52,5 @@ uniq_pkg_deps("ggplot2", pak_res = pkg_deps_ex$ggplot2)
 # ^ scales adds the most unique dependencies to ggplot2 -- 6 including itself.
 }
 \seealso{
-[plot_deps_graph()]
+\code{\link{plot_deps_graph}}
 }

@@ -86,6 +86,7 @@ get_igraph_gr = function(pkg, edge_vec) {
 #' @rawNamespace import(collapse, except = c(fdroplevels))
 #' @rawNamespace import(data.table, except = c(first, last, between, transpose))
 #' @importFrom stats rnorm cmdscale
+#' @seealso \code{\link{uniq_pkg_deps}}
 #' @examples
 #' plot_deps_graph("ggplot2", pak_res = pkg_deps_ex$ggplot2)
 #' # ^ ggplot2 has a moderate number of dependencies

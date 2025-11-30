@@ -16,7 +16,7 @@
 #'   etc have the most unique dependencies.
 #' @returns A data.table listing the packages, number of unique dependencies,
 #'   and the unique dependencies themselves.
-#' @seealso [plot_deps_graph()]
+#' @seealso \code{\link{plot_deps_graph}}
 #' @inheritParams plot_deps_graph
 #' @examples
 #' uniq_pkg_deps("ggplot2", pak_res = pkg_deps_ex$ggplot2)
