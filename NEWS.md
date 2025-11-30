@@ -1,3 +1,3 @@
-# havel 0.9.0
+# havel 0.1.0
 
 * Initial CRAN submission.

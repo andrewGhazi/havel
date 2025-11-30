@@ -1,7 +1,7 @@
 Package: havel
 Type: Package
 Title: Visualize and Tabulate 'R' Package Dependencies 
-Version: 0.9.0
+Version: 0.1.0
 Authors@R: person("Andrew", "Ghazi", role = c("aut", "cre", "cph"), email = "andrew_ghazi@hms.harvard.edu")
 Description: Plot an 'R' package's recursive dependency graph and tabulate the 
     number of unique downstream dependencies added by top-level dependencies. 
