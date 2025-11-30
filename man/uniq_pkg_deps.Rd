@@ -16,7 +16,7 @@ uniq_pkg_deps(
 \item{pkg}{a package to check}
 
 \item{dep_type}{type(s) of dependencies to look up. Valid values are
-\code{c("depends", "imports", "linkingto", "suggests")}}
+\code{c("depends", "imports", "linkingto")}}
 
 \item{pak_res}{a pre-computed result from
 \code{\link[pak:pkg_deps]{pak::pkg_deps}}}
@@ -50,6 +50,8 @@ Use this function to tabulate which packages have the most unique
 \examples{
 uniq_pkg_deps("ggplot2", pak_res = pkg_deps_ex$ggplot2)
 # ^ scales adds the most unique dependencies to ggplot2 -- 6 including itself.
+# The `pak_res` argument here is a pre-computed result to avoid internet
+# access on CRAN's servers. It's not required.
 }
 \seealso{
 \code{\link{plot_deps_graph}}

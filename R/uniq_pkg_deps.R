@@ -21,6 +21,8 @@
 #' @examples
 #' uniq_pkg_deps("ggplot2", pak_res = pkg_deps_ex$ggplot2)
 #' # ^ scales adds the most unique dependencies to ggplot2 -- 6 including itself.
+#' # The `pak_res` argument here is a pre-computed result to avoid internet
+#' # access on CRAN's servers. It's not required.
 #' @importFrom utils combn
 #' @export
 uniq_pkg_deps = function(pkg,

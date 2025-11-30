@@ -42,7 +42,7 @@ get_igraph_gr = function(pkg, edge_vec) {
 #'   number of packages it depends on.
 #' @param pkg package string passed to \code{\link[pak:pkg_deps]{pak::pkg_deps}}
 #' @param dep_type type(s) of dependencies to look up. Valid values are
-#'   \code{c("depends", "imports", "linkingto", "suggests")}
+#'   \code{c("depends", "imports", "linkingto")}
 #' @param init how to initialize layout, MDS (default) or randomly
 #' @param n_iter number of iterations for stress graph layout computation
 #' @param pak_res a pre-computed result from
@@ -61,9 +61,8 @@ get_igraph_gr = function(pkg, edge_vec) {
 #'   indicating where to draw the legend
 #' @param arw factor by which to lengthen/shorten arrowheads
 #' @param ... other arguments passed to par()
-#' @details If you include \code{"suggests"} among the dependency types to look
-#'   up, be aware that suggests can be circular / cyclic. If this is detected,
-#'   the node coloring will be turned off.
+#' @details \code{dep_type = "suggests"} is currently not supported because
+#'   Suggests can be cyclic.
 #'
 #'   Pre-computing the dependency lookup with
 #'   \code{\link[pak:pkg_deps]{pak::pkg_deps}} and passing it to the
@@ -71,9 +70,9 @@ get_igraph_gr = function(pkg, edge_vec) {
 #'   parameters. Also handy to avoid hitting the bundled GitHub PAT limits used
 #'   by pak::pkg_deps().
 #'
-#'   The arrows and padding will be off if you resize the panel with the base
-#'   graphics version. Either set \code{gg=TRUE} or set your desired graphics
-#'   device size, then re-run your command.
+#'   The arrows and padding will be off if you resize the graphics window with
+#'   the base graphics version. Either set \code{gg=TRUE} or set your desired
+#'   graphics device size, then re-run your command.
 #'
 #'   The layout in the base graphics version is initialized with a bit of random
 #'   jitter. If you want to tweak it change the random seed and try again.
@@ -82,7 +81,8 @@ get_igraph_gr = function(pkg, edge_vec) {
 #'   typically looks worse than MDS initialization. Generally only useful if the
 #'   MDS layout happens to overlap the legend or something.
 #'
-#' @returns No return value, called for side effect of producing a plot.
+#' @returns By default, no return value, called for side effect of producing a
+#'   plot. If \code{gg = TRUE}, then a ggplot object.
 #' @rawNamespace import(collapse, except = c(fdroplevels))
 #' @rawNamespace import(data.table, except = c(first, last, between, transpose))
 #' @importFrom stats rnorm cmdscale
@@ -113,18 +113,10 @@ plot_deps_graph = function(pkg,
                            # log_col_scale = FALSE,
                            ...) {
 
-  if (gg) {
-    rlang::check_installed(c("ggplot2", "ggraph", "igraph", "pals"))
-  }
-
   # @param log_col_scale if TRUE, set node colors to vary on a log scale with
   # if (log_col_scale) {
   #   cli::cli_abort("log_col_scale not implemented yet!")
   # }
-
-  if ("suggests" %in% tolower(dep_type)) {
-    cli::cli_abort("Suggests aren't properly handled yet. (fun fact: Suggests can be cyclical!)")
-  }
 
   rlang::arg_match(dep_type,
                    values = c("depends", "imports", "suggests", "linkingto"),
@@ -135,6 +127,14 @@ plot_deps_graph = function(pkg,
 
   rlang::arg_match(legend_loc,
                    values = c("topright", "topleft", "bottomright", "bottomleft"))
+
+  if (gg) {
+    rlang::check_installed(c("ggplot2", "ggraph", "igraph", "pals"))
+  }
+
+  if ("suggests" %in% tolower(dep_type)) {
+    cli::cli_abort("Suggests aren't properly handled yet (fun fact: Suggests can be cyclical!).")
+  }
 
   prgc = get_pkg_graph(pkg, dep_type, pak_res, info_method)
 

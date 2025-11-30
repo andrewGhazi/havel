@@ -25,7 +25,7 @@ plot_deps_graph(
 \item{pkg}{package string passed to \code{\link[pak:pkg_deps]{pak::pkg_deps}}}
 
 \item{dep_type}{type(s) of dependencies to look up. Valid values are
-\code{c("depends", "imports", "linkingto", "suggests")}}
+\code{c("depends", "imports", "linkingto")}}
 
 \item{pak_res}{a pre-computed result from
 \code{\link[pak:pkg_deps]{pak::pkg_deps}}}
@@ -58,7 +58,8 @@ indicating where to draw the legend}
 \item{...}{other arguments passed to par()}
 }
 \value{
-No return value, called for side effect of producing a plot.
+By default, no return value, called for side effect of producing a
+  plot. If \code{gg = TRUE}, then a ggplot object.
 }
 \description{
 Plot a package's dependency graph, coloring each node by the
@@ -67,7 +68,8 @@ Plot a package's dependency graph, coloring each node by the
 \details{
 If you include \code{"suggests"} among the dependency types to look
   up, be aware that suggests can be circular / cyclic. If this is detected,
-  the node coloring will be turned off.
+  the node coloring will be turned off. Including suggests is currently only
+  supported when \code{gg = TRUE}.
 
   Pre-computing the dependency lookup with
   \code{\link[pak:pkg_deps]{pak::pkg_deps}} and passing it to the
